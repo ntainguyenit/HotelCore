@@ -1,3 +1,4 @@
+@model HotelCore.Application.DTOs.DashboardOverviewDto
 @{
     ViewData["Title"] = "Dashboard";
 }
@@ -5,12 +6,12 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="fw-bold text-dark">Tổng quan Khách Sạn</h3>
     <div>
-        <button class="btn btn-orange me-2"><i class="bi bi-plus-circle me-1"></i> Đặt phòng mới</button>
+        <a href="/Booking/Create" class="btn btn-orange me-2"><i class="bi bi-plus-circle me-1"></i> Đặt phòng mới</a>
         <button class="btn btn-outline-orange"><i class="bi bi-download me-1"></i> Xuất báo cáo</button>
     </div>
 </div>
 
-<!-- Thống kê nhanh -->
+<!-- Thống kê nhanh (Dynamic) -->
 <div class="row g-4 mb-5">
     <div class="col-md-3">
         <div class="card h-100 border-0 shadow-sm">
@@ -20,7 +21,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-1">Phòng Trống</h6>
-                    <h3 class="fw-bold mb-0">15 <span class="fs-6 text-muted fw-normal">/ 40</span></h3>
+                    <h3 class="fw-bold mb-0">@Model.AvailableRooms <span class="fs-6 text-muted fw-normal">/ @Model.TotalRooms</span></h3>
                 </div>
             </div>
         </div>
@@ -33,7 +34,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-1">Đang Có Khách</h6>
-                    <h3 class="fw-bold mb-0">22</h3>
+                    <h3 class="fw-bold mb-0">@Model.OccupiedRooms</h3>
                 </div>
             </div>
         </div>
@@ -46,7 +47,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-1">Check-in Hôm Nay</h6>
-                    <h3 class="fw-bold mb-0">8</h3>
+                    <h3 class="fw-bold mb-0">@Model.CheckInToday</h3>
                 </div>
             </div>
         </div>
@@ -59,65 +60,99 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-1">Doanh Thu Ngày</h6>
-                    <h3 class="fw-bold mb-0">12.5M</h3>
+                    <h3 class="fw-bold mb-0">@Model.TodayRevenue.ToString("N0") đ</h3>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Lưới Phòng Trực Quan -->
+<!-- Lưới Phòng Trực Quan (Dynamic) -->
 <h5 class="fw-bold mb-3">Sơ đồ phòng hiện tại</h5>
 <div class="row g-3">
-    <!-- Tầng 1 -->
-    <div class="col-12 mb-2"><span class="badge bg-secondary">Tầng 1 (Standard)</span></div>
-    
-    <div class="col-md-2 col-sm-4 col-6">
-        <div class="card room-card room-available h-100 p-3 text-center">
-            <h5 class="fw-bold mb-1">101</h5>
-            <span class="badge badge-soft-success mb-2">Trống</span>
-            <small class="text-muted d-block"><i class="bi bi-person"></i> 2 người</small>
-        </div>
-    </div>
-    <div class="col-md-2 col-sm-4 col-6">
-        <div class="card room-card room-occupied h-100 p-3 text-center">
-            <h5 class="fw-bold mb-1">102</h5>
-            <span class="badge badge-soft-danger mb-2">Đang thuê</span>
-            <small class="text-muted d-block text-truncate">Lê Hoàng C</small>
-        </div>
-    </div>
-    <div class="col-md-2 col-sm-4 col-6">
-        <div class="card room-card room-available h-100 p-3 text-center">
-            <h5 class="fw-bold mb-1">103</h5>
-            <span class="badge badge-soft-success mb-2">Trống</span>
-            <small class="text-muted d-block"><i class="bi bi-person"></i> 2 người</small>
-        </div>
-    </div>
-    <div class="col-md-2 col-sm-4 col-6">
-        <div class="card room-card room-cleaning h-100 p-3 text-center">
-            <h5 class="fw-bold mb-1">104</h5>
-            <span class="badge badge-soft-warning mb-2">Dọn dẹp</span>
-            <small class="text-muted d-block"><i class="bi bi-clock"></i> 30 min</small>
-        </div>
-    </div>
+    @if (Model.RoomGrids != null && Model.RoomGrids.Any())
+    {
+        var groupedRooms = Model.RoomGrids.GroupBy(r => r.Floor).OrderBy(g => g.Key);
 
-    <!-- Tầng 2 -->
-    <div class="col-12 mt-4 mb-2"><span class="badge bg-secondary">Tầng 2 (VIP/Suite)</span></div>
-    
-    <div class="col-md-2 col-sm-4 col-6">
-        <div class="card room-card room-occupied h-100 p-3 text-center">
-            <h5 class="fw-bold mb-1 text-orange">201 VIP</h5>
-            <span class="badge badge-soft-danger mb-2">Đang thuê</span>
-            <small class="text-muted d-block text-truncate">Phạm Thị D</small>
+        foreach (var floorGroup in groupedRooms)
+        {
+            <div class="col-12 mt-4 mb-2">
+                <span class="badge bg-secondary">Tầng @floorGroup.Key</span>
+            </div>
+
+            foreach (var room in floorGroup)
+            {
+                var borderClass = room.Status switch
+                {
+                    "Available" => "room-available",
+                    "Occupied" => "room-occupied",
+                    "Cleaning" => "room-cleaning",
+                    _ => "room-available"
+                };
+
+                var badgeClass = room.Status switch
+                {
+                    "Available" => "badge-soft-success",
+                    "Occupied" => "badge-soft-danger",
+                    "Cleaning" => "badge-soft-warning",
+                    _ => "badge-soft-secondary"
+                };
+
+                var statusText = room.Status switch
+                {
+                    "Available" => "Trống",
+                    "Occupied" => "Đang thuê",
+                    "Cleaning" => "Dọn dẹp",
+                    "Maintenance" => "Bảo trì",
+                    _ => room.Status
+                };
+
+                <div class="col-md-2 col-sm-4 col-6">
+                    @if (room.Status == "Occupied")
+                    {
+                        <a href="/Invoice/Checkout?bookingId=1" class="text-decoration-none text-dark">
+                            <div class="card room-card @borderClass h-100 p-3 text-center shadow-sm">
+                                <h5 class="fw-bold mb-1 @(room.TypeName != null && (room.TypeName.Contains("VIP") || room.TypeName.Contains("Suite")) ? "text-orange" : "")">
+                                    @room.RoomNumber
+                                </h5>
+                                <span class="badge @badgeClass mb-2">@statusText</span>
+                                <small class="text-muted d-block text-truncate">@(string.IsNullOrEmpty(room.CurrentCustomerName) ? "Khách ẩn danh" : room.CurrentCustomerName)</small>
+                                <small class="text-orange d-block mt-1 fw-bold" style="font-size: 0.7rem;"><i class="bi bi-box-arrow-right me-1"></i>THANH TOÁN</small>
+                            </div>
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="card room-card @borderClass h-100 p-3 text-center shadow-sm">
+                            <h5 class="fw-bold mb-1 @(room.TypeName != null && (room.TypeName.Contains("VIP") || room.TypeName.Contains("Suite")) ? "text-orange" : "")">
+                                @room.RoomNumber
+                            </h5>
+                            <span class="badge @badgeClass mb-2">@statusText</span>
+                            
+                            @if (room.Status == "Available")
+                            {
+                                <small class="text-muted d-block"><i class="bi bi-person"></i> @room.Capacity người</small>
+                            }
+                            else if (room.Status == "Cleaning")
+                            {
+                                <small class="text-muted d-block"><i class="bi bi-clock"></i> Đang dọn</small>
+                            }
+                            else
+                            {
+                                <small class="text-muted d-block"><i class="bi bi-tools"></i> Bảo trì</small>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="alert alert-info">Chưa có dữ liệu phòng.</div>
         </div>
-    </div>
-    <div class="col-md-2 col-sm-4 col-6">
-        <div class="card room-card room-available h-100 p-3 text-center">
-            <h5 class="fw-bold mb-1 text-orange">202 VIP</h5>
-            <span class="badge badge-soft-success mb-2">Trống</span>
-            <small class="text-muted d-block"><i class="bi bi-person"></i> 4 người</small>
-        </div>
-    </div>
+    }
 </div>
 
 @section Scripts {

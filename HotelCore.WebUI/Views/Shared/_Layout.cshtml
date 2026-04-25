@@ -21,19 +21,22 @@
             </div>
 
             <ul class="list-unstyled components p-3">
+                @{
+                    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+                }
                 <p class="text-uppercase text-white-50 fw-bold fs-7 mb-2">Quản lý</p>
                 <li class="nav-item mb-1">
-                    <a href="/" class="nav-link text-white rounded active">
+                    <a href="/" class="nav-link text-white rounded @(controller == "Home" ? "active" : "")">
                         <i class="bi bi-speedometer2 me-2"></i> Dashboard
                     </a>
                 </li>
                 <li class="nav-item mb-1">
-                    <a href="#" class="nav-link text-white rounded">
+                    <a href="/Booking/Create" class="nav-link text-white rounded @(controller == "Booking" ? "active" : "")">
                         <i class="bi bi-door-open me-2"></i> Đặt Phòng
                     </a>
                 </li>
                 <li class="nav-item mb-1">
-                    <a href="#" class="nav-link text-white rounded">
+                    <a href="/Invoice/Index" class="nav-link text-white rounded @(controller == "Invoice" ? "active" : "")">
                         <i class="bi bi-journal-text me-2"></i> Hóa Đơn
                     </a>
                 </li>
@@ -45,12 +48,12 @@
                 
                 <p class="text-uppercase text-white-50 fw-bold fs-7 mb-2 mt-4">Danh mục</p>
                 <li class="nav-item mb-1">
-                    <a href="#" class="nav-link text-white rounded">
+                    <a href="/Customer/Index" class="nav-link text-white rounded @(controller == "Customer" ? "active" : "")">
                         <i class="bi bi-people me-2"></i> Khách Hàng
                     </a>
                 </li>
                 <li class="nav-item mb-1">
-                    <a href="#" class="nav-link text-white rounded">
+                    <a href="/Employee/Index" class="nav-link text-white rounded @(controller == "Employee" ? "active" : "")">
                         <i class="bi bi-person-badge me-2"></i> Nhân Viên
                     </a>
                 </li>
@@ -92,7 +95,7 @@
                 </div>
             </nav>
 
-            <div class="container-fluid px-4 pb-4">
+            <div class="container-fluid px-4 pb-4 flex-grow-1">
                 <main role="main">
                     @RenderBody()
                 </main>
