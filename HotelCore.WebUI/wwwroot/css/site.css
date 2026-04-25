@@ -1,0 +1,117 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f6f9;
+}
+
+/* Colors */
+:root {
+    --primary-orange: #e67e22;
+    --dark-orange: #d35400;
+    --light-orange: #fdf2e9;
+    --sidebar-bg: #2c3e50;
+}
+
+.bg-dark-orange { background-color: var(--dark-orange) !important; }
+.text-orange { color: var(--dark-orange) !important; }
+.bg-light-orange { background-color: var(--light-orange) !important; }
+
+/* Wrapper & Sidebar */
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    min-height: 100vh;
+}
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    transition: all 0.3s;
+    background-color: var(--dark-orange) !important;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+#sidebar.active {
+    margin-left: -250px;
+}
+
+#sidebar .sidebar-header {
+    background-color: rgba(0,0,0,0.1);
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+}
+
+#sidebar ul li a {
+    padding: 12px 20px;
+    font-size: 1.05em;
+    display: block;
+    transition: 0.2s;
+    opacity: 0.9;
+}
+
+#sidebar ul li a:hover {
+    background-color: rgba(255,255,255,0.1);
+    opacity: 1;
+    text-decoration: none;
+}
+
+#sidebar ul li a.active {
+    background-color: rgba(255,255,255,0.2);
+    font-weight: 600;
+    opacity: 1;
+}
+
+/* Content */
+.content-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.fs-7 { font-size: 0.85rem; }
+
+/* Buttons */
+.btn-outline-orange {
+    color: var(--dark-orange);
+    border-color: var(--dark-orange);
+}
+.btn-outline-orange:hover {
+    background-color: var(--dark-orange);
+    color: white;
+}
+.btn-orange {
+    background-color: var(--dark-orange);
+    color: white;
+    border: none;
+}
+.btn-orange:hover {
+    background-color: #b84a00;
+    color: white;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.04);
+    transition: transform 0.2s ease-in-out;
+}
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.room-card {
+    border-left: 5px solid transparent;
+}
+.room-available { border-left-color: #2ecc71; }
+.room-occupied { border-left-color: #e74c3c; }
+.room-cleaning { border-left-color: #f1c40f; }
+
+/* Badges */
+.badge-soft-success { background-color: #d1f2eb; color: #117a65; }
+.badge-soft-danger { background-color: #fadbd8; color: #b03a2e; }
+.badge-soft-warning { background-color: #fcf3cf; color: #b7950b; }
