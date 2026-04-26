@@ -1,0 +1,183 @@
+@model HotelCore.Application.DTOs.LoginDto
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - HotelCore</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-orange: #e67e22;
+            --dark-orange: #d35400;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: url('/images/hotel-bg.png') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            position: relative;
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            z-index: 1;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+            z-index: 10;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            border: none;
+        }
+        .login-image {
+            width: 45%;
+            background: url('/images/hotel-bg.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px;
+            color: white;
+        }
+        .login-image::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(211, 84, 0, 0.2), rgba(211, 84, 0, 0.8));
+        }
+        .login-image-content {
+            position: relative;
+            z-index: 2;
+        }
+        .login-form-side {
+            width: 55%;
+            padding: 50px;
+            background: white;
+        }
+        .brand-logo {
+            width: 50px;
+            height: 50px;
+            background: var(--dark-orange);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        .btn-orange {
+            background: var(--dark-orange);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            border-radius: 12px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .btn-orange:hover {
+            background: #b84a00;
+            box-shadow: 0 5px 15px rgba(184, 74, 0, 0.4);
+            color: white;
+        }
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(211, 84, 0, 0.1);
+            border-color: var(--dark-orange);
+            background: white;
+        }
+        @@media (max-width: 768px) {
+            .login-card { flex-direction: column; }
+            .login-image { width: 100%; height: 200px; }
+            .login-form-side { width: 100%; padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-image">
+                <div class="login-image-content">
+                    <h2 class="fw-bold mb-2">HotelCore</h2>
+                    <p class="mb-0 opacity-75">Giải pháp quản lý vận hành khách sạn thông minh và chuyên nghiệp.</p>
+                </div>
+            </div>
+            <div class="login-form-side">
+                <div class="brand-logo">
+                    <i class="bi bi-buildings"></i>
+                </div>
+                <h3 class="fw-bold mb-1">Chào mừng trở lại!</h3>
+                <p class="text-muted mb-4">Vui lòng đăng nhập để vào hệ thống.</p>
+
+                <form asp-action="Login" method="post">
+                    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Tên đăng nhập</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                            <input asp-for="Username" class="form-control border-start-0" placeholder="admin" />
+                        </div>
+                        <span asp-validation-for="Username" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mật khẩu</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
+                            <input asp-for="Password" class="form-control border-start-0" placeholder="••••••••" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input asp-for="RememberMe" class="form-check-input" type="checkbox">
+                            <label class="form-check-label text-muted small" asp-for="RememberMe">Ghi nhớ tôi</label>
+                        </div>
+                        <a href="#" class="text-orange small text-decoration-none">Quên mật khẩu?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-orange mb-3 py-2">ĐĂNG NHẬP</button>
+                    
+                    <div class="text-center">
+                        <small class="text-muted">© 2026 HotelCore Management System</small>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

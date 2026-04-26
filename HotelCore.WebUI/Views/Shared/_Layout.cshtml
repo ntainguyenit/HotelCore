@@ -41,7 +41,7 @@
                     </a>
                 </li>
                 <li class="nav-item mb-1">
-                    <a href="#" class="nav-link text-white rounded">
+                    <a href="/Service/Index" class="nav-link text-white rounded @(controller == "Service" ? "active" : "")">
                         <i class="bi bi-cup-hot me-2"></i> Dịch Vụ
                     </a>
                 </li>
@@ -82,13 +82,17 @@
                         </div>
                         <div class="dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                                <img src="https://ui-avatars.com/api/?name=Admin&background=d35400&color=fff" class="rounded-circle me-2" width="32" height="32" alt="User">
-                                <span class="fw-semibold">Quản Trị Viên</span>
+                                <img src="https://ui-avatars.com/api/?name=@User.Identity.Name&background=d35400&color=fff" class="rounded-circle me-2" width="32" height="32" alt="User">
+                                <div class="d-none d-md-block text-start">
+                                    <div class="fw-semibold lh-1" style="font-size: 0.9rem;">@User.Identity.Name</div>
+                                    <small class="text-muted" style="font-size: 0.75rem;">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</small>
+                                </div>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                                <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i> Hồ sơ</a></li>
+                                <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile"><i class="bi bi-person me-2"></i> Hồ sơ cá nhân</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i> Cài đặt</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
+                                <li><a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout"><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
                             </ul>
                         </div>
                     </div>

@@ -9,14 +9,25 @@ builder.Services.AddScoped<HotelCore.Application.Interfaces.IBookingService, Hot
 builder.Services.AddScoped<HotelCore.Application.Interfaces.ICustomerService, HotelCore.Infrastructure.Services.CustomerService>();
 builder.Services.AddScoped<HotelCore.Application.Interfaces.IEmployeeService, HotelCore.Infrastructure.Services.EmployeeService>();
 builder.Services.AddScoped<HotelCore.Application.Interfaces.IInvoiceService, HotelCore.Infrastructure.Services.InvoiceService>();
+builder.Services.AddScoped<HotelCore.Application.Interfaces.IServiceService, HotelCore.Infrastructure.Services.ServiceService>();
+builder.Services.AddScoped<HotelCore.Application.Interfaces.IAuthService, HotelCore.Infrastructure.Services.AuthService>();
+
+// Cấu hình Authentication
+builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.SlidingExpiration = true;
+        options.Cookie.Name = "HotelCore.Auth";
+    });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -25,6 +36,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
