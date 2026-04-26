@@ -12,6 +12,7 @@ builder.Services.AddScoped<HotelCore.Application.Interfaces.IInvoiceService, Hot
 builder.Services.AddScoped<HotelCore.Application.Interfaces.IServiceService, HotelCore.Infrastructure.Services.ServiceService>();
 builder.Services.AddScoped<HotelCore.Application.Interfaces.IAuthService, HotelCore.Infrastructure.Services.AuthService>();
 builder.Services.AddScoped<HotelCore.Application.Interfaces.ISettingService, HotelCore.Infrastructure.Services.SettingService>();
+builder.Services.AddScoped<HotelCore.Application.Interfaces.IReportService, HotelCore.Infrastructure.Services.ReportService>();
 
 // Cấu hình Authentication
 builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
