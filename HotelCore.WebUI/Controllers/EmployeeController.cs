@@ -3,9 +3,11 @@ using HotelCore.Application.DTOs;
 using HotelCore.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelCore.WebUI.Controllers
 {
+    [Authorize(Roles = "Quản lý")]
     public class EmployeeController : Controller
     {
         private readonly IEmployeeService _employeeService;
@@ -15,10 +17,12 @@ namespace HotelCore.WebUI.Controllers
             _employeeService = employeeService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm = "", int pageNumber = 1)
         {
-            var employees = await _employeeService.GetAllEmployeesAsync();
-            return View(employees);
+            int pageSize = 10;
+            var result = await _employeeService.GetPagedEmployeesAsync(searchTerm, pageNumber, pageSize);
+            ViewBag.SearchTerm = searchTerm;
+            return View(result);
         }
 
         [HttpGet]

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using HotelCore.Application.DTOs;
 using HotelCore.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelCore.WebUI.Controllers
@@ -8,6 +9,7 @@ namespace HotelCore.WebUI.Controllers
     /// <summary>
     /// Controller quản lý thông tin khách hàng.
     /// </summary>
+    [Authorize(Roles = "Quản lý,Lễ tân,Kinh doanh")]
     public class CustomerController : Controller
     {
         private readonly ICustomerService _customerService;
@@ -20,9 +22,11 @@ namespace HotelCore.WebUI.Controllers
         /// <summary>
         /// Hiển thị danh sách khách hàng.
         /// </summary>
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm = "", int pageNumber = 1)
         {
-            var customers = await _customerService.GetAllCustomersAsync();
+            int pageSize = 10;
+            var customers = await _customerService.GetPagedCustomersAsync(searchTerm, pageNumber, pageSize);
+            ViewBag.SearchTerm = searchTerm;
             return View(customers);
         }
 
@@ -52,6 +56,23 @@ namespace HotelCore.WebUI.Controllers
                 ModelState.AddModelError(string.Empty, "Có lỗi xảy ra khi lưu dữ liệu.");
             }
             return View(customer);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAjax([FromBody] CustomerCreateDto customer)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _customerService.CreateCustomerAsync(customer);
+                if (result)
+                {
+                    // Lấy lại danh sách khách hàng mới nhất (hoặc chỉ cần trả về OK)
+                    // Ở đây ta có thể trả về thông tin khách hàng vừa tạo nếu Service hỗ trợ trả về ID
+                    // Tạm thời trả về thành công
+                    return Json(new { success = true });
+                }
+            }
+            return Json(new { success = false, message = "Dữ liệu không hợp lệ." });
         }
 
         /// <summary>

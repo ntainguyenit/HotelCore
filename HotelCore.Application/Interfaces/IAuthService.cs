@@ -32,5 +32,10 @@ namespace HotelCore.Application.Interfaces
         /// Khởi tạo tài khoản mặc định (cho mục đích demo/setup)
         /// </summary>
         Task<bool> CreateInitialAccountAsync(int employeeId, string username, string password);
+
+        /// <summary>
+        /// Gửi yêu cầu khôi phục mật khẩu tới Quản trị viên
+        /// </summary>
+        Task<bool> CreatePasswordResetRequestAsync(string username);
     }
 }

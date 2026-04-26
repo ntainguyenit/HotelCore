@@ -10,8 +10,9 @@ namespace HotelCore.Application.Interfaces
     public interface IInvoiceService
     {
         Task<IEnumerable<InvoiceDto>> GetAllInvoicesAsync();
-        Task<InvoiceDto?> GetInvoiceByIdAsync(int id);
-        Task<CheckoutViewDto?> GetBookingForCheckoutAsync(int bookingId);
+        Task<PagedResultDto<InvoiceDto>> GetPagedInvoicesAsync(string searchTerm, int pageNumber, int pageSize);
+        Task<InvoiceDto> GetInvoiceByIdAsync(int id);
+        Task<CheckoutViewDto> GetBookingForCheckoutAsync(int bookingId);
         Task<bool> CreateInvoiceAsync(InvoiceCreateDto invoice);
     }
 }

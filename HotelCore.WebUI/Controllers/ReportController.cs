@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelCore.WebUI.Controllers
 {
-    [Authorize(Roles = "Quản lý")]
+    [Authorize(Roles = "Quản lý,Kế toán,Kinh doanh")]
     public class ReportController : Controller
     {
         private readonly IReportService _reportService;

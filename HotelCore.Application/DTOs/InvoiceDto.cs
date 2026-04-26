@@ -9,14 +9,14 @@ namespace HotelCore.Application.DTOs
     public class InvoiceDto
     {
         public int InvoiceId { get; set; }
-        public string? CustomerName { get; set; }
-        public string? RoomNumber { get; set; }
+        public string CustomerName { get; set; }
+        public string RoomNumber { get; set; }
         public DateTime InvoiceDate { get; set; }
         public decimal RoomAmount { get; set; }
         public decimal ServiceAmount { get; set; }
         public decimal TaxAmount { get; set; }
         public decimal TotalAmount { get; set; }
-        public string? PaymentMethod { get; set; }
+        public string PaymentMethod { get; set; }
     }
 
     /// <summary>
@@ -25,9 +25,9 @@ namespace HotelCore.Application.DTOs
     public class CheckoutViewDto
     {
         public int BookingId { get; set; }
-        public string? CustomerName { get; set; }
-        public string? RoomNumber { get; set; }
-        public string? RoomType { get; set; }
+        public string CustomerName { get; set; }
+        public string RoomNumber { get; set; }
+        public string RoomType { get; set; }
         public DateTime CheckInDate { get; set; }
         public DateTime CheckOutDate { get; set; }
         public int TotalDays { get; set; }
@@ -41,7 +41,7 @@ namespace HotelCore.Application.DTOs
 
     public class InvoiceServiceDetailDto
     {
-        public string? ServiceName { get; set; }
+        public string ServiceName { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }
         public decimal SubTotal => Quantity * Price;
@@ -57,6 +57,6 @@ namespace HotelCore.Application.DTOs
         public decimal ServiceTotal { get; set; }
         public decimal TaxAmount { get; set; }
         public decimal TotalAmount { get; set; }
-        public string? PaymentMethod { get; set; } // Cash, Credit Card, Bank Transfer
+        public string PaymentMethod { get; set; } // Cash, Credit Card, Bank Transfer
     }
 }

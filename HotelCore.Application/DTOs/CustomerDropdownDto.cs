@@ -13,6 +13,6 @@ namespace HotelCore.Application.DTOs
         /// <summary>
         /// Họ tên đầy đủ của khách hàng kèm theo số điện thoại (để dễ nhận diện).
         /// </summary>
-        public string? DisplayName { get; set; }
+        public string DisplayName { get; set; }
     }
 }

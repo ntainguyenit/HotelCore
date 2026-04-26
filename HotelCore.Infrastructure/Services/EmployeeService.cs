@@ -34,11 +34,48 @@ namespace HotelCore.Infrastructure.Services
             return await db.QueryAsync<EmployeeDto>(sql);
         }
 
-        public async Task<EmployeeUpdateDto?> GetEmployeeByIdAsync(int id)
+        public async Task<EmployeeUpdateDto> GetEmployeeByIdAsync(int id)
         {
             using IDbConnection db = new SqlConnection(_connectionString);
             string sql = "SELECT EmployeeId, HotelId, RoleId, FullName, Phone, Email, BaseSalary AS Salary, Status AS IsActive FROM Employees WHERE EmployeeId = @Id";
             return await db.QuerySingleOrDefaultAsync<EmployeeUpdateDto>(sql, new { Id = id });
+        }
+
+        public async Task<PagedResultDto<EmployeeDto>> GetPagedEmployeesAsync(string searchTerm, int pageNumber, int pageSize)
+        {
+            using IDbConnection db = new SqlConnection(_connectionString);
+            var offset = (pageNumber - 1) * pageSize;
+
+            string whereClause = "";
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                whereClause = "WHERE e.FullName LIKE @Search OR e.Phone LIKE @Search OR r.RoleName LIKE @Search";
+            }
+
+            string countSql = $@"
+                SELECT COUNT(*) 
+                FROM Employees e
+                LEFT JOIN Roles r ON e.RoleId = r.RoleId
+                {whereClause}";
+
+            string dataSql = $@"
+                SELECT e.EmployeeId, e.FullName, e.Phone, e.Email, e.BaseSalary AS Salary, e.Status AS IsActive, r.RoleName
+                FROM Employees e
+                LEFT JOIN Roles r ON e.RoleId = r.RoleId
+                {whereClause}
+                ORDER BY e.EmployeeId DESC
+                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            var totalCount = await db.ExecuteScalarAsync<int>(countSql, new { Search = $"%{searchTerm}%" });
+            var items = await db.QueryAsync<EmployeeDto>(dataSql, new { Search = $"%{searchTerm}%", Offset = offset, PageSize = pageSize });
+
+            return new PagedResultDto<EmployeeDto>
+            {
+                Items = System.Linq.Enumerable.ToList(items),
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
 
         public async Task<IEnumerable<RoleDropdownDto>> GetRolesAsync()

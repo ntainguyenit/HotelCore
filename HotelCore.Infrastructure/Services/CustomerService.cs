@@ -30,7 +30,37 @@ namespace HotelCore.Infrastructure.Services
             return await db.QueryAsync<CustomerDto>(sql);
         }
 
-        public async Task<CustomerDto?> GetCustomerByIdAsync(int id)
+        public async Task<PagedResultDto<CustomerDto>> GetPagedCustomersAsync(string searchTerm, int pageNumber, int pageSize)
+        {
+            using IDbConnection db = new SqlConnection(_connectionString);
+            string countSql = "SELECT COUNT(*) FROM Customers";
+            string dataSql = @"SELECT * FROM Customers 
+                               ORDER BY CustomerId DESC 
+                               OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                countSql += " WHERE FullName LIKE @Search OR Phone LIKE @Search OR IdCardNumber LIKE @Search";
+                dataSql = @"SELECT * FROM Customers 
+                            WHERE FullName LIKE @Search OR Phone LIKE @Search OR IdCardNumber LIKE @Search 
+                            ORDER BY CustomerId DESC 
+                            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+            }
+
+            var offset = (pageNumber - 1) * pageSize;
+            var totalCount = await db.ExecuteScalarAsync<int>(countSql, new { Search = $"%{searchTerm}%" });
+            var items = await db.QueryAsync<CustomerDto>(dataSql, new { Search = $"%{searchTerm}%", Offset = offset, PageSize = pageSize });
+
+            return new PagedResultDto<CustomerDto>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
+        public async Task<CustomerDto> GetCustomerByIdAsync(int id)
         {
             using IDbConnection db = new SqlConnection(_connectionString);
             string sql = "SELECT * FROM Customers WHERE CustomerId = @Id";

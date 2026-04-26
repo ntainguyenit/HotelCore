@@ -37,7 +37,7 @@ namespace HotelCore.Infrastructure.Services
             return await db.QueryAsync<InvoiceDto>(sql);
         }
 
-        public async Task<InvoiceDto?> GetInvoiceByIdAsync(int id)
+        public async Task<InvoiceDto> GetInvoiceByIdAsync(int id)
         {
             using IDbConnection db = new SqlConnection(_connectionString);
             string sql = @"
@@ -53,7 +53,52 @@ namespace HotelCore.Infrastructure.Services
             return await db.QueryFirstOrDefaultAsync<InvoiceDto>(sql, new { Id = id });
         }
 
-        public async Task<CheckoutViewDto?> GetBookingForCheckoutAsync(int bookingId)
+        public async Task<PagedResultDto<InvoiceDto>> GetPagedInvoicesAsync(string searchTerm, int pageNumber, int pageSize)
+        {
+            using IDbConnection db = new SqlConnection(_connectionString);
+            var offset = (pageNumber - 1) * pageSize;
+            
+            string whereClause = "";
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                whereClause = "WHERE c.FullName LIKE @Search OR r.RoomNumber LIKE @Search";
+            }
+
+            string countSql = $@"
+                SELECT COUNT(*) 
+                FROM Invoices i
+                JOIN Bookings b ON i.BookingId = b.BookingId
+                JOIN Customers c ON b.CustomerId = c.CustomerId
+                JOIN BookingRooms br ON b.BookingId = br.BookingId
+                JOIN Rooms r ON br.RoomId = r.RoomId
+                {whereClause}";
+
+            string dataSql = $@"
+                SELECT i.InvoiceId, c.FullName AS CustomerName, r.RoomNumber, i.InvoiceDate, 
+                       i.RoomTotal as RoomAmount, i.ServiceTotal as ServiceAmount, i.TaxAmount, 
+                       i.TotalAmount, i.PaymentMethod
+                FROM Invoices i
+                JOIN Bookings b ON i.BookingId = b.BookingId
+                JOIN Customers c ON b.CustomerId = c.CustomerId
+                JOIN BookingRooms br ON b.BookingId = br.BookingId
+                JOIN Rooms r ON br.RoomId = r.RoomId
+                {whereClause}
+                ORDER BY i.InvoiceDate DESC
+                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            var totalCount = await db.ExecuteScalarAsync<int>(countSql, new { Search = $"%{searchTerm}%" });
+            var items = await db.QueryAsync<InvoiceDto>(dataSql, new { Search = $"%{searchTerm}%", Offset = offset, PageSize = pageSize });
+
+            return new PagedResultDto<InvoiceDto>
+            {
+                Items = items.ToList(),
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
+        public async Task<CheckoutViewDto> GetBookingForCheckoutAsync(int bookingId)
         {
             using IDbConnection db = new SqlConnection(_connectionString);
             

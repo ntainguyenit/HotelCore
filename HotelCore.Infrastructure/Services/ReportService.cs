@@ -56,7 +56,7 @@ namespace HotelCore.Infrastructure.Services
 
             // 4. Top Dịch vụ
             string topServicesSql = @"
-                SELECT TOP 5
+                SELECT TOP 10
                     s.ServiceName,
                     SUM(bs.Quantity) as UsageCount,
                     SUM(bs.Quantity * bs.Price) as TotalRevenue

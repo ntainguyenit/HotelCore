@@ -5,9 +5,17 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="fw-bold text-dark">Tổng quan Khách Sạn</h3>
-    <div>
-        <a href="/Booking/Create" class="btn btn-orange me-2"><i class="bi bi-plus-circle me-1"></i> Đặt phòng mới</a>
-        <button class="btn btn-outline-orange"><i class="bi bi-download me-1"></i> Xuất báo cáo</button>
+    <div class="d-flex">
+        <a href="/Booking/Create" class="btn btn-orange me-2 shadow-sm"><i class="bi bi-plus-circle me-1"></i> Đặt phòng mới</a>
+        <div class="dropdown">
+            <button class="btn btn-outline-orange dropdown-toggle shadow-sm" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-download me-1"></i> Xuất báo cáo
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="exportDropdown">
+                <li><a class="dropdown-item py-2" href="javascript:void(0)" onclick="exportToExcel()"><i class="bi bi-file-earmark-excel text-success me-2"></i> Xuất file Excel (.csv)</a></li>
+                <li><a class="dropdown-item py-2" href="javascript:void(0)" onclick="exportToPDF()"><i class="bi bi-file-earmark-pdf text-danger me-2"></i> Xuất file PDF (In sơ đồ)</a></li>
+            </ul>
+        </div>
     </div>
 </div>
 
@@ -68,16 +76,30 @@
 </div>
 
 <!-- Lưới Phòng Trực Quan (Dynamic) -->
-<h5 class="fw-bold mb-3">Sơ đồ phòng hiện tại</h5>
-<div class="row g-3">
+<!-- Bộ lọc Tầng -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0">Sơ đồ phòng hiện tại</h5>
+    <div class="btn-group" role="group" aria-label="Floor filter">
+        <button type="button" class="btn btn-sm btn-outline-orange active shadow-sm px-3" onclick="filterFloor('all', this)">Tất cả</button>
+        <button type="button" class="btn btn-sm btn-outline-orange shadow-sm px-3" onclick="filterFloor('1', this)">Tầng 1</button>
+        <button type="button" class="btn btn-sm btn-outline-orange shadow-sm px-3" onclick="filterFloor('2', this)">Tầng 2</button>
+        <button type="button" class="btn btn-sm btn-outline-orange shadow-sm px-3" onclick="filterFloor('3', this)">Tầng 3</button>
+        <button type="button" class="btn btn-sm btn-outline-orange shadow-sm px-3" onclick="filterFloor('4', this)">Tầng 4</button>
+    </div>
+</div>
+
+<div class="row g-3" id="room-grid-container">
     @if (Model.RoomGrids != null && Model.RoomGrids.Any())
     {
         var groupedRooms = Model.RoomGrids.GroupBy(r => r.Floor).OrderBy(g => g.Key);
 
         foreach (var floorGroup in groupedRooms)
         {
-            <div class="col-12 mt-4 mb-2">
-                <span class="badge bg-secondary">Tầng @floorGroup.Key</span>
+            <div class="col-12 mt-4 mb-2 floor-section" data-floor="@floorGroup.Key">
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-dark-orange px-3 py-2 me-3">TẦNG @floorGroup.Key</span>
+                    <hr class="flex-grow-1 opacity-25">
+                </div>
             </div>
 
             foreach (var room in floorGroup)
@@ -107,7 +129,7 @@
                     _ => room.Status
                 };
 
-                <div class="col-md-2 col-sm-4 col-6">
+                <div class="col-md-2 col-sm-4 col-6 room-item" data-floor="@floorGroup.Key">
                     @if (room.Status == "Occupied")
                     {
                         <a href="/Invoice/Checkout?bookingId=1" class="text-decoration-none text-dark">
@@ -157,10 +179,96 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            $('#sidebarCollapse').on('click', function () {
-                $('#sidebar').toggleClass('active');
+        function filterFloor(floor, btn) {
+            // Cập nhật trạng thái active của nút
+            const buttons = document.querySelectorAll('.btn-group .btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const sections = document.querySelectorAll('.floor-section');
+            const rooms = document.querySelectorAll('.room-item');
+
+            if (floor === 'all') {
+                sections.forEach(s => s.classList.remove('d-none'));
+                rooms.forEach(r => r.classList.remove('d-none'));
+            } else {
+                sections.forEach(s => {
+                    if (s.getAttribute('data-floor') === floor) {
+                        s.classList.remove('d-none');
+                    } else {
+                        s.classList.add('d-none');
+                    }
+                });
+
+                rooms.forEach(r => {
+                    if (r.getAttribute('data-floor') === floor) {
+                        r.classList.remove('d-none');
+                    } else {
+                        r.classList.add('d-none');
+                    }
+                });
+            }
+        }
+
+        function exportToExcel() {
+            let csv = "\uFEFF"; // Byte Order Mark for Excel Vietnamese support
+            csv += "Tầng,Số Phòng,Trạng Thái,Khách Hàng\n";
+            
+            const rooms = document.querySelectorAll('.room-item');
+            rooms.forEach(room => {
+                const floor = room.getAttribute('data-floor');
+                const number = room.querySelector('h5').innerText.trim();
+                const status = room.querySelector('.badge').innerText.trim();
+                const customer = room.querySelector('small')?.innerText.trim() || "";
+                csv += `${floor},${number},${status},${customer}\n`;
             });
-        });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Bao_cao_so_do_phong.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            toastr.success("Đã xuất file Excel thành công!");
+        }
+
+        function exportToPDF() {
+            window.print();
+        }
     </script>
 }
+
+<style>
+    @@media print {
+        #sidebar, .navbar, .btn-group, .dropdown, .btn-orange, .badge-soft-secondary {
+            display: none !important;
+        }
+        .content-wrapper {
+            margin-left: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+        #content {
+            width: 100% !important;
+            padding: 0 !important;
+        }
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #ddd !important;
+            break-inside: avoid;
+        }
+        .floor-section {
+            break-before: auto;
+            margin-top: 20px !important;
+        }
+        body {
+            background: white !important;
+        }
+    }
+</style>
+
+

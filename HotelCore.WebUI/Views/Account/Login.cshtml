@@ -145,7 +145,7 @@
                         <label class="form-label fw-semibold">Tên đăng nhập</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
-                            <input asp-for="Username" class="form-control border-start-0" placeholder="admin" />
+                            <input asp-for="Username" class="form-control border-start-0" placeholder="Nhập tên đăng nhập" />
                         </div>
                         <span asp-validation-for="Username" class="text-danger small"></span>
                     </div>
@@ -154,7 +154,7 @@
                         <label class="form-label fw-semibold">Mật khẩu</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
-                            <input asp-for="Password" class="form-control border-start-0" placeholder="••••••••" />
+                            <input asp-for="Password" class="form-control border-start-0" placeholder="Nhập mật khẩu" />
                         </div>
                         <span asp-validation-for="Password" class="text-danger small"></span>
                     </div>
@@ -164,7 +164,7 @@
                             <input asp-for="RememberMe" class="form-check-input" type="checkbox">
                             <label class="form-check-label text-muted small" asp-for="RememberMe">Ghi nhớ tôi</label>
                         </div>
-                        <a href="#" class="text-orange small text-decoration-none">Quên mật khẩu?</a>
+                        <a asp-action="ForgotPassword" class="text-orange small text-decoration-none">Quên mật khẩu?</a>
                     </div>
 
                     <button type="submit" class="btn btn-orange mb-3 py-2">ĐĂNG NHẬP</button>

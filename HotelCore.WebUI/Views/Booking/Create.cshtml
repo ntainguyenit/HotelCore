@@ -4,7 +4,7 @@
 }
 
 <div class="row justify-content-center">
-    <div class="col-md-8">
+    <div class="col-md-10">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-dark-orange text-white">
                 <h5 class="mb-0 fw-bold"><i class="bi bi-calendar-plus me-2"></i>Tạo Đặt Phòng Mới</h5>
@@ -16,15 +16,22 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label asp-for="CustomerId" class="form-label fw-semibold"></label>
-                            <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.CustomerList">
-                                <option value="">-- Chọn khách hàng --</option>
-                            </select>
+                            <div class="d-flex">
+                                <div class="flex-grow-1" style="min-width: 0;">
+                                    <select asp-for="CustomerId" class="form-select select2-customer" asp-items="ViewBag.CustomerList">
+                                        <option value="">-- Chọn hoặc tìm khách hàng --</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="btn btn-orange ms-2 flex-shrink-0" style="height: 38px; width: 45px;" data-bs-toggle="modal" data-bs-target="#addCustomerModal" title="Thêm khách hàng mới">
+                                    <i class="bi bi-person-plus-fill"></i>
+                                </button>
+                            </div>
                             <span asp-validation-for="CustomerId" class="text-danger small"></span>
                         </div>
 
                         <div class="col-md-6">
                             <label asp-for="RoomId" class="form-label fw-semibold"></label>
-                            <select asp-for="RoomId" class="form-select" asp-items="ViewBag.RoomList">
+                            <select asp-for="RoomId" class="form-select select2-room" asp-items="ViewBag.RoomList">
                                 <option value="">-- Chọn phòng trống --</option>
                             </select>
                             <span asp-validation-for="RoomId" class="text-danger small"></span>
@@ -63,6 +70,97 @@
     </div>
 </div>
 
+<!-- Modal Thêm Khách Hàng Nhanh -->
+<div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-orange text-white">
+                <h5 class="modal-title fw-bold" id="addCustomerModalLabel">Thêm Khách Hàng Mới</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="quickAddCustomerForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Họ và tên</label>
+                        <input type="text" id="custFullName" class="form-control" required placeholder="Nguyễn Văn A">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Số điện thoại</label>
+                        <input type="text" id="custPhone" class="form-control" required placeholder="090...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Số CCCD/Passport</label>
+                        <input type="text" id="custIdCard" class="form-control" placeholder="0123...">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-orange" onclick="saveCustomerAjax()">Lưu Khách Hàng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            $('.select2-customer').select2({
+                placeholder: "-- Chọn hoặc tìm khách hàng --",
+                allowClear: true,
+                width: '100%'
+            });
+            $('.select2-room').select2({
+                placeholder: "-- Chọn phòng trống --",
+                width: '100%'
+            });
+        });
+
+        function saveCustomerAjax() {
+            const data = {
+                FullName: $('#custFullName').val(),
+                Phone: $('#custPhone').val(),
+                IdCardNumber: $('#custIdCard').val(),
+                Gender: "Nam", // Mặc định hoặc thêm field chọn
+                Address: ""
+            };
+
+            if (!data.FullName || !data.Phone) {
+                toastr.error("Vui lòng nhập đủ tên và số điện thoại.");
+                return;
+            }
+
+            $.ajax({
+                url: '/Customer/CreateAjax',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success("Đã thêm khách hàng thành công!");
+                        $('#addCustomerModal').modal('hide');
+                        // Reload trang để cập nhật danh sách (hoặc thêm option vào select2 nếu trả về ID)
+                        location.reload();
+                    } else {
+                        toastr.error(response.message || "Lỗi khi thêm khách hàng.");
+                    }
+                },
+                error: function() {
+                    toastr.error("Có lỗi hệ thống xảy ra.");
+                }
+            });
+        }
+    </script>
+    <style>
+        .select2-container .select2-selection--single {
+            height: 38px !important;
+            border: 1px solid #dee2e6 !important;
+            display: flex;
+            align-items: center;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px !important;
+        }
+    </style>
 }

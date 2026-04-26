@@ -10,7 +10,8 @@ namespace HotelCore.Application.Interfaces
     public interface ICustomerService
     {
         Task<IEnumerable<CustomerDto>> GetAllCustomersAsync();
-        Task<CustomerDto?> GetCustomerByIdAsync(int id);
+        Task<PagedResultDto<CustomerDto>> GetPagedCustomersAsync(string searchTerm, int pageNumber, int pageSize);
+        Task<CustomerDto> GetCustomerByIdAsync(int id);
         Task<bool> CreateCustomerAsync(CustomerCreateDto customer);
         Task<bool> UpdateCustomerAsync(CustomerUpdateDto customer);
         Task<bool> DeleteCustomerAsync(int id);

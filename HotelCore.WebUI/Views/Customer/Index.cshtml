@@ -1,14 +1,24 @@
-@model IEnumerable<HotelCore.Application.DTOs.CustomerDto>
+@model HotelCore.Application.DTOs.PagedResultDto<HotelCore.Application.DTOs.CustomerDto>
 @{
     ViewData["Title"] = "Danh sách Khách Hàng";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="fw-bold text-dark">Quản lý Khách Hàng</h3>
-    <a asp-action="Create" class="btn btn-orange"><i class="bi bi-person-plus me-1"></i> Thêm Khách Hàng</a>
+    <div class="d-flex gap-2">
+        <form asp-action="Index" method="get" class="d-flex">
+            <div class="input-group">
+                <input type="text" name="searchTerm" class="form-control border-0 shadow-sm px-3" style="min-width: 250px;" placeholder="Tìm tên, số điện thoại..." value="@ViewBag.SearchTerm">
+                <button class="btn btn-white border-0 shadow-sm text-orange" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+        <a asp-action="Create" class="btn btn-orange shadow-sm px-4"><i class="bi bi-person-plus me-1"></i> Thêm Khách Hàng</a>
+    </div>
 </div>
 
-<div class="card shadow-sm border-0">
+<div class="card shadow-sm border-0 mb-4">
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -23,31 +33,98 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark">@item.FullName</div>
+                                    <small class="text-muted">@(item.Gender.ToString() == "1" ? "Nam" : "Nữ") | @(item.DOB?.ToString("dd/MM/yyyy") ?? "N/A")</small>
+                                </td>
+                                <td>@item.Phone</td>
+                                <td>@item.IdCardNumber</td>
+                                <td>@item.Email</td>
+                                <td class="text-truncate" style="max-width: 200px;">@item.Address</td>
+                                <td class="text-end pe-4">
+                                    <a asp-action="Edit" asp-route-id="@item.CustomerId" class="btn btn-sm btn-outline-primary border-0 shadow-sm me-1 rounded-circle" style="width: 32px; height: 32px; padding: 0;">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form id="deleteForm-@item.CustomerId" asp-action="Delete" asp-route-id="@item.CustomerId" method="post" class="d-inline">
+                                        <button type="button" class="btn btn-sm btn-outline-danger border-0 shadow-sm rounded-circle" style="width: 32px; height: 32px; padding: 0;" onclick="confirmDelete('Xóa khách hàng?', 'Dữ liệu khách hàng @item.FullName sẽ bị xóa vĩnh viễn!', 'Đồng ý xóa', 'deleteForm-@item.CustomerId')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td class="ps-4">
-                                <div class="fw-bold text-dark">@item.FullName</div>
-                                <small class="text-muted">@item.Gender | @(item.DOB?.ToString("dd/MM/yyyy") ?? "N/A")</small>
-                            </td>
-                            <td>@item.Phone</td>
-                            <td>@item.IdCardNumber</td>
-                            <td>@item.Email</td>
-                            <td class="text-truncate" style="max-width: 200px;">@item.Address</td>
-                            <td class="text-end pe-4">
-                                <a asp-action="Edit" asp-route-id="@item.CustomerId" class="btn btn-sm btn-outline-primary me-1">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <form id="deleteForm-@item.CustomerId" asp-action="Delete" asp-route-id="@item.CustomerId" method="post" class="d-inline">
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete('Xóa khách hàng?', 'Dữ liệu khách hàng @item.FullName sẽ bị xóa vĩnh viễn!', 'Đồng ý xóa', 'deleteForm-@item.CustomerId')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
+                            <td colspan="6" class="text-center py-5 text-muted">Không tìm thấy khách hàng phù hợp.</td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
+    </div>
+</div>
+
+<!-- Phân trang -->
+<div class="d-flex flex-column align-items-center mb-5 mt-4">
+    <nav aria-label="Page navigation" class="mb-3">
+        <ul class="pagination pagination-md mb-0">
+            <!-- Nút Trước -->
+            <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                <a class="page-link shadow-sm border-0 rounded-pill me-2 px-3 d-flex align-items-center" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route(searchTerm)="@ViewBag.SearchTerm">
+                    <i class="bi bi-chevron-left me-1"></i> Trước
+                </a>
+            </li>
+            
+            @{
+                int startPage = Math.Max(1, Model.PageNumber - 1);
+                int endPage = Math.Min(Model.TotalPages, Model.PageNumber + 1);
+
+                if (startPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link shadow-sm border-0 rounded-circle me-2 d-flex align-items-center justify-content-center bg-white text-dark" style="width: 38px; height: 38px;" asp-action="Index" asp-route-pageNumber="1" asp-route-searchTerm="@ViewBag.SearchTerm">1</a>
+                    </li>
+                    if (startPage > 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link border-0 bg-transparent">...</span></li>
+                    }
+                }
+
+                for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link shadow-sm border-0 rounded-circle me-2 d-flex align-items-center justify-content-center @(i == Model.PageNumber ? "bg-orange text-white" : "bg-white text-dark")" style="width: 38px; height: 38px;" asp-action="Index" asp-route-pageNumber="@i" asp-route-searchTerm="@ViewBag.SearchTerm">@i</a>
+                    </li>
+                }
+
+                if (endPage < Model.TotalPages)
+                {
+                    if (endPage < Model.TotalPages - 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link border-0 bg-transparent">...</span></li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link shadow-sm border-0 rounded-circle me-2 d-flex align-items-center justify-content-center bg-white text-dark" style="width: 38px; height: 38px;" asp-action="Index" asp-route-pageNumber="@Model.TotalPages" asp-route-searchTerm="@ViewBag.SearchTerm">@Model.TotalPages</a>
+                    </li>
+                }
+            }
+
+            <!-- Nút Sau -->
+            <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                <a class="page-link shadow-sm border-0 rounded-pill px-3 d-flex align-items-center" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-searchTerm="@ViewBag.SearchTerm">
+                    Sau <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="text-muted small fw-medium">
+        Đang hiển thị <span class="text-dark fw-bold">@Model.Items.Count()</span> trên tổng số <span class="text-dark fw-bold">@Model.TotalCount</span> khách hàng
     </div>
 </div>

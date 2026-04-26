@@ -9,10 +9,10 @@ namespace HotelCore.Application.DTOs
     public class EmployeeDto
     {
         public int EmployeeId { get; set; }
-        public string? FullName { get; set; }
-        public string? Phone { get; set; }
-        public string? Email { get; set; }
-        public string? RoleName { get; set; }
+        public string FullName { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
+        public string RoleName { get; set; }
         public decimal Salary { get; set; }
         public bool IsActive { get; set; }
     }
@@ -23,7 +23,7 @@ namespace HotelCore.Application.DTOs
     public class RoleDropdownDto
     {
         public int RoleId { get; set; }
-        public string? RoleName { get; set; }
+        public string RoleName { get; set; }
     }
 
     /// <summary>
@@ -33,14 +33,14 @@ namespace HotelCore.Application.DTOs
     {
         [Required(ErrorMessage = "Họ tên không được để trống.")]
         [Display(Name = "Họ và Tên")]
-        public string? FullName { get; set; }
+        public string FullName { get; set; }
 
         [Required(ErrorMessage = "Số điện thoại không được để trống.")]
         [Display(Name = "Số điện thoại")]
-        public string? Phone { get; set; }
+        public string Phone { get; set; }
 
         [EmailAddress(ErrorMessage = "Email không đúng định dạng.")]
-        public string? Email { get; set; }
+        public string Email { get; set; }
 
         [Required(ErrorMessage = "Vui lòng chọn chức vụ.")]
         [Display(Name = "Chức vụ")]

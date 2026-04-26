@@ -41,6 +41,36 @@ namespace HotelCore.Infrastructure.Services
             return await db.QueryAsync<ServiceDto>(sql);
         }
 
+        public async Task<PagedResultDto<ServiceDto>> GetPagedServicesAsync(string searchTerm, int pageNumber, int pageSize)
+        {
+            using var db = CreateConnection();
+            string countSql = "SELECT COUNT(*) FROM Services";
+            string dataSql = @"SELECT * FROM Services 
+                               ORDER BY ServiceId 
+                               OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                countSql += " WHERE ServiceName LIKE @Search";
+                dataSql = @"SELECT * FROM Services 
+                            WHERE ServiceName LIKE @Search 
+                            ORDER BY ServiceId 
+                            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+            }
+
+            var offset = (pageNumber - 1) * pageSize;
+            var totalCount = await db.ExecuteScalarAsync<int>(countSql, new { Search = $"%{searchTerm}%" });
+            var items = await db.QueryAsync<ServiceDto>(dataSql, new { Search = $"%{searchTerm}%", Offset = offset, PageSize = pageSize });
+
+            return new PagedResultDto<ServiceDto>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
         /// <summary>
         /// Lấy thông tin chi tiết một dịch vụ
         /// </summary>

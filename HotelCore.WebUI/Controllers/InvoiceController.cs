@@ -1,10 +1,12 @@
 using System.Threading.Tasks;
 using HotelCore.Application.DTOs;
 using HotelCore.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelCore.WebUI.Controllers
 {
+    [Authorize(Roles = "Quản lý,Lễ tân,Kế toán")]
     public class InvoiceController : Controller
     {
         private readonly IInvoiceService _invoiceService;
@@ -14,9 +16,11 @@ namespace HotelCore.WebUI.Controllers
             _invoiceService = invoiceService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm = "", int pageNumber = 1)
         {
-            var invoices = await _invoiceService.GetAllInvoicesAsync();
+            int pageSize = 10;
+            var invoices = await _invoiceService.GetPagedInvoicesAsync(searchTerm, pageNumber, pageSize);
+            ViewBag.SearchTerm = searchTerm;
             return View(invoices);
         }
 

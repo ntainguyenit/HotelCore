@@ -124,13 +124,37 @@ namespace HotelCore.Infrastructure.Services
             using var db = CreateConnection();
             string hash = BCrypt.Net.BCrypt.HashPassword(password);
             
-            string sql = @"IF NOT EXISTS (SELECT 1 FROM Accounts WHERE Username = @Username)
+            string sql = @"IF EXISTS (SELECT 1 FROM Accounts WHERE Username = @Username)
+                           BEGIN
+                               UPDATE Accounts SET PasswordHash = @Hash, EmployeeId = @EmployeeId WHERE Username = @Username
+                           END
+                           ELSE
                            BEGIN
                                INSERT INTO Accounts (EmployeeId, Username, PasswordHash) 
                                VALUES (@EmployeeId, @Username, @Hash)
                            END";
 
             int rows = await db.ExecuteAsync(sql, new { EmployeeId = employeeId, Username = username, Hash = hash });
+            return rows > 0;
+        }
+
+        public async Task<bool> CreatePasswordResetRequestAsync(string username)
+        {
+            using var db = CreateConnection();
+            
+            // Lấy FullName từ Employee liên kết với Account
+            string getInfoSql = @"SELECT e.FullName 
+                                  FROM Accounts a
+                                  JOIN Employees e ON a.EmployeeId = e.EmployeeId
+                                  WHERE a.Username = @Username";
+            
+            var fullName = await db.QueryFirstOrDefaultAsync<string>(getInfoSql, new { Username = username });
+            
+            if (string.IsNullOrEmpty(fullName)) return false;
+
+            string insertSql = "INSERT INTO PasswordResetRequests (Username, FullName) VALUES (@Username, @FullName)";
+            int rows = await db.ExecuteAsync(insertSql, new { Username = username, FullName = fullName });
+            
             return rows > 0;
         }
     }

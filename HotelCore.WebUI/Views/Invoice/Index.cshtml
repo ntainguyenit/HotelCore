@@ -1,10 +1,16 @@
-@model IEnumerable<HotelCore.Application.DTOs.InvoiceDto>
+@model HotelCore.Application.DTOs.PagedResultDto<HotelCore.Application.DTOs.InvoiceDto>
 @{
     ViewData["Title"] = "Lịch sử Hóa đơn";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="fw-bold text-dark">Lịch sử Hóa đơn</h3>
+    <h3 class="fw-bold text-dark mb-0">Lịch sử Hóa đơn</h3>
+    <form asp-action="Index" method="get" class="d-flex" style="max-width: 400px; width: 100%;">
+        <div class="input-group">
+            <input type="text" name="searchTerm" class="form-control" placeholder="Tìm tên khách, số phòng..." value="@ViewBag.SearchTerm">
+            <button class="btn btn-orange" type="submit"><i class="bi bi-search"></i></button>
+        </div>
+    </form>
 </div>
 
 <div class="card shadow-sm border-0">
@@ -17,32 +23,78 @@
                         <th>Khách Hàng</th>
                         <th>Phòng</th>
                         <th>Ngày Xuất</th>
-                        <th>Tổng Tiền</th>
+                        <th class="text-end">Tiền Phòng</th>
+                        <th class="text-end">Dịch Vụ</th>
+                        <th class="text-end">Tổng Tiền</th>
                         <th>Thanh Toán</th>
                         <th class="text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.Items)
                     {
                         <tr>
                             <td class="ps-4 fw-bold">#HĐ-@item.InvoiceId</td>
                             <td>@item.CustomerName</td>
                             <td><span class="badge bg-secondary">P.@item.RoomNumber</span></td>
                             <td>@item.InvoiceDate.ToString("dd/MM/yyyy HH:mm")</td>
-                            <td class="fw-bold text-orange">@item.TotalAmount.ToString("N0") đ</td>
+                            <td class="text-end">@item.RoomAmount.ToString("N0") đ</td>
+                            <td class="text-end">@item.ServiceAmount.ToString("N0") đ</td>
+                            <td class="text-end fw-bold text-orange">@item.TotalAmount.ToString("N0") đ</td>
                             <td>
-                                <span class="badge @(item.PaymentMethod == "Cash" ? "bg-success" : "bg-primary")">
-                                    @item.PaymentMethod
-                                </span>
+                                @if (item.PaymentMethod == "Cash")
+                                {
+                                    <span class="badge bg-soft-success text-success border border-success border-opacity-25 px-2">Tiền mặt</span>
+                                }
+                                else if (item.PaymentMethod == "Credit Card")
+                                {
+                                    <span class="badge bg-soft-primary text-primary border border-primary border-opacity-25 px-2">Thẻ tín dụng</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-soft-warning text-warning border border-warning border-opacity-25 px-2">Chuyển khoản</span>
+                                }
                             </td>
                             <td class="text-end pe-4">
-                                <a asp-action="Details" asp-route-id="@item.InvoiceId" target="_blank" class="btn btn-sm btn-outline-orange"><i class="bi bi-printer"></i> In</a>
+                                <a asp-action="Details" asp-route-id="@item.InvoiceId" target="_blank" class="btn btn-sm btn-outline-orange shadow-sm"><i class="bi bi-printer me-1"></i> In hóa đơn</a>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="card-footer bg-white border-0 py-3">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-0">
+                @if (Model.PageNumber > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-searchTerm="@ViewBag.SearchTerm">Trước</a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    if (i == 1 || i == Model.TotalPages || (i >= Model.PageNumber - 1 && i <= Model.PageNumber + 1))
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link @(i == Model.PageNumber ? "bg-orange border-orange" : "")" asp-action="Index" asp-route-pageNumber="@i" asp-route-searchTerm="@ViewBag.SearchTerm">@i</a>
+                        </li>
+                    }
+                    else if (i == 2 || i == Model.TotalPages - 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                }
+
+                @if (Model.PageNumber < Model.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-searchTerm="@ViewBag.SearchTerm">Sau</a>
+                    </li>
+                }
+            </ul>
+        </nav>
     </div>
 </div>

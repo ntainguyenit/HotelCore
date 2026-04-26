@@ -44,6 +44,6 @@ namespace HotelCore.Application.DTOs
         /// </summary>
         [Display(Name = "Ghi chú")]
         [StringLength(500, ErrorMessage = "Ghi chú không được vượt quá 500 ký tự.")]
-        public string? Notes { get; set; }
+        public string Notes { get; set; }
     }
 }

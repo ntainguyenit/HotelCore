@@ -1,11 +1,19 @@
-@model IEnumerable<HotelCore.Application.DTOs.EmployeeDto>
+@model HotelCore.Application.DTOs.PagedResultDto<HotelCore.Application.DTOs.EmployeeDto>
 @{
     ViewData["Title"] = "Quản lý Nhân viên";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="fw-bold text-dark">Danh sách Nhân viên</h3>
-    <a asp-action="Create" class="btn btn-orange"><i class="bi bi-person-plus-fill me-1"></i> Thêm Nhân viên</a>
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold text-dark mb-3 mb-md-0">Danh sách Nhân viên</h3>
+    <div class="d-flex gap-2">
+        <form asp-action="Index" method="get" class="d-flex" style="max-width: 300px;">
+            <div class="input-group">
+                <input type="text" name="searchTerm" class="form-control" placeholder="Tìm tên, SĐT, chức vụ..." value="@ViewBag.SearchTerm">
+                <button class="btn btn-orange" type="submit"><i class="bi bi-search"></i></button>
+            </div>
+        </form>
+        <a asp-action="Create" class="btn btn-orange"><i class="bi bi-person-plus-fill me-1"></i> Thêm Nhân viên</a>
+    </div>
 </div>
 
 <div class="card shadow-sm border-0">
@@ -23,34 +31,49 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.Items)
                     {
                         <tr>
                             <td class="ps-4">
-                                <div class="fw-bold text-dark">@item.FullName</div>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-3">@item.FullName.Substring(0, 1)</div>
+                                    <div class="fw-bold text-dark">@item.FullName</div>
+                                </div>
                             </td>
-                            <td><span class="badge bg-info text-dark">@item.RoleName</span></td>
                             <td>
-                                <div><i class="bi bi-phone me-1"></i>@item.Phone</div>
-                                <small class="text-muted">@item.Email</small>
+                                @{
+                                    var badgeClass = item.RoleName switch
+                                    {
+                                        "Quản lý" => "bg-primary",
+                                        "Lễ tân" => "bg-info text-dark",
+                                        "Kế toán" => "bg-warning text-dark",
+                                        "Buồng phòng" => "bg-success",
+                                        _ => "bg-secondary"
+                                    };
+                                }
+                                <span class="badge @badgeClass">@item.RoleName</span>
+                            </td>
+                            <td>
+                                <div class="small"><i class="bi bi-phone me-1 text-muted"></i>@item.Phone</div>
+                                <div class="small text-muted"><i class="bi bi-envelope me-1 text-muted"></i>@item.Email</div>
                             </td>
                             <td class="fw-bold text-orange">@item.Salary.ToString("N0") đ</td>
                             <td>
                                 @if (item.IsActive)
                                 {
-                                    <span class="badge bg-success">Đang làm việc</span>
+                                    <span class="badge bg-soft-success text-success border border-success border-opacity-25 px-2">Đang làm việc</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-danger">Đã nghỉ việc</span>
+                                    <span class="badge bg-soft-danger text-danger border border-danger border-opacity-25 px-2">Đã nghỉ việc</span>
                                 }
                             </td>
                             <td class="text-end pe-4">
-                                <a asp-action="Edit" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-outline-primary me-1">
-                                    <i class="bi bi-pencil"></i>
+                                <a asp-action="Edit" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-outline-primary border-0 me-1">
+                                    <i class="bi bi-pencil-square"></i>
                                 </a>
                                 <form id="deleteForm-@item.EmployeeId" asp-action="Delete" asp-route-id="@item.EmployeeId" method="post" class="d-inline">
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete('Xóa nhân viên?', 'Bạn có chắc muốn xóa nhân viên @item.FullName?', 'Đồng ý xóa', 'deleteForm-@item.EmployeeId')">
+                                    <button type="button" class="btn btn-sm btn-outline-danger border-0" onclick="confirmDelete('Xóa nhân viên?', 'Bạn có chắc muốn xóa nhân viên @item.FullName?', 'Đồng ý xóa', 'deleteForm-@item.EmployeeId')">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -60,5 +83,38 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="card-footer bg-white border-0 py-3">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-0">
+                @if (Model.PageNumber > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-searchTerm="@ViewBag.SearchTerm">Trước</a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    if (i == 1 || i == Model.TotalPages || (i >= Model.PageNumber - 1 && i <= Model.PageNumber + 1))
+                    {
+                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                            <a class="page-link @(i == Model.PageNumber ? "bg-orange border-orange" : "")" asp-action="Index" asp-route-pageNumber="@i" asp-route-searchTerm="@ViewBag.SearchTerm">@i</a>
+                        </li>
+                    }
+                    else if (i == 2 || i == Model.TotalPages - 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    }
+                }
+
+                @if (Model.PageNumber < Model.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-searchTerm="@ViewBag.SearchTerm">Sau</a>
+                    </li>
+                }
+            </ul>
+        </nav>
     </div>
 </div>

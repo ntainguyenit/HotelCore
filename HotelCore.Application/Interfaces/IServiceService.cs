@@ -15,6 +15,11 @@ namespace HotelCore.Application.Interfaces
         Task<IEnumerable<ServiceDto>> GetAllServicesAsync(string searchTerm = null);
 
         /// <summary>
+        /// Lấy danh sách dịch vụ có phân trang
+        /// </summary>
+        Task<PagedResultDto<ServiceDto>> GetPagedServicesAsync(string searchTerm, int pageNumber, int pageSize);
+
+        /// <summary>
         /// Lấy thông tin chi tiết một dịch vụ theo ID
         /// </summary>
         Task<ServiceDto> GetServiceByIdAsync(int id);

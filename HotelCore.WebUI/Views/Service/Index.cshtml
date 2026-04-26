@@ -1,4 +1,4 @@
-@model IEnumerable<HotelCore.Application.DTOs.ServiceDto>
+@model HotelCore.Application.DTOs.PagedResultDto<HotelCore.Application.DTOs.ServiceDto>
 @{
     ViewData["Title"] = "Quản lý Dịch vụ";
 }
@@ -24,7 +24,7 @@
     </div>
 </div>
 
-<div class="card shadow-sm border-0">
+<div class="card shadow-sm border-0 mb-3">
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -38,20 +38,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (!Model.Any())
+                    @if (!Model.Items.Any())
                     {
                         <tr>
                             <td colspan="5" class="text-center py-4 text-muted">Không tìm thấy dịch vụ nào.</td>
                         </tr>
                     }
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.Items)
                     {
                         <tr>
                             <td class="ps-4 fw-bold">@item.ServiceName</td>
                             <td>@item.Unit</td>
                             <td class="fw-bold text-orange">@item.Price.ToString("N0") đ</td>
                             <td>
-                                <span class="badge @(item.Status ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger") px-3 py-2">
+                                <span class="badge @(item.Status ? "badge-soft-success" : "badge-soft-danger") px-3 py-2">
                                     <i class="bi @(item.Status ? "bi-check-circle-fill" : "bi-dash-circle-fill") me-1"></i>
                                     @item.StatusText
                                 </span>
@@ -69,3 +69,70 @@
         </div>
     </div>
 </div>
+
+<!-- Phân trang -->
+<div class="d-flex flex-column align-items-center mb-5 mt-4">
+    <nav aria-label="Page navigation" class="mb-3">
+        <ul class="pagination pagination-md mb-0">
+            <!-- Nút Trước -->
+            <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                <a class="page-link shadow-sm border-0 rounded-pill me-2 px-3 d-flex align-items-center" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-searchTerm="@ViewBag.SearchTerm">
+                    <i class="bi bi-chevron-left me-1"></i> Trước
+                </a>
+            </li>
+            
+            @{
+                int startPage = Math.Max(1, Model.PageNumber - 1);
+                int endPage = Math.Min(Model.TotalPages, Model.PageNumber + 1);
+
+                // Luôn hiển thị trang 1
+                if (startPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link shadow-sm border-0 rounded-circle me-2 d-flex align-items-center justify-content-center bg-white text-dark" style="width: 38px; height: 38px;" asp-action="Index" asp-route-pageNumber="1" asp-route-searchTerm="@ViewBag.SearchTerm">1</a>
+                    </li>
+                    if (startPage > 2)
+                    {
+                        <li class="page-item disabled"><span class="page-link border-0 bg-transparent">...</span></li>
+                    }
+                }
+
+                for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link shadow-sm border-0 rounded-circle me-2 d-flex align-items-center justify-content-center @(i == Model.PageNumber ? "bg-orange text-white" : "bg-white text-dark")" style="width: 38px; height: 38px;" asp-action="Index" asp-route-pageNumber="@i" asp-route-searchTerm="@ViewBag.SearchTerm">@i</a>
+                    </li>
+                }
+
+                // Luôn hiển thị trang cuối
+                if (endPage < Model.TotalPages)
+                {
+                    if (endPage < Model.TotalPages - 1)
+                    {
+                        <li class="page-item disabled"><span class="page-link border-0 bg-transparent">...</span></li>
+                    }
+                    <li class="page-item">
+                        <a class="page-link shadow-sm border-0 rounded-circle me-2 d-flex align-items-center justify-content-center bg-white text-dark" style="width: 38px; height: 38px;" asp-action="Index" asp-route-pageNumber="@Model.TotalPages" asp-route-searchTerm="@ViewBag.SearchTerm">@Model.TotalPages</a>
+                    </li>
+                }
+            }
+
+            <!-- Nút Sau -->
+            <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                <a class="page-link shadow-sm border-0 rounded-pill px-3 d-flex align-items-center" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-searchTerm="@ViewBag.SearchTerm">
+                    Sau <i class="bi bi-chevron-right ms-1"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="text-muted small fw-medium">
+        Đang hiển thị <span class="text-dark fw-bold">@Model.Items.Count()</span> trên tổng số <span class="text-dark fw-bold">@Model.TotalCount</span> dịch vụ
+    </div>
+</div>
+
+<style>
+    .bg-orange { background-color: var(--dark-orange) !important; color: white !important; }
+    .border-orange { border-color: var(--dark-orange) !important; }
+    .page-link { color: var(--dark-orange); }
+    .page-item.active .page-link { border-color: var(--dark-orange); }
+</style>

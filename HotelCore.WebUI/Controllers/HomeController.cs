@@ -4,11 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using HotelCore.WebUI.Models;
 using HotelCore.Application.Interfaces;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace HotelCore.WebUI.Controllers;
 
 /// <summary>
 /// Controller xử lý các trang chính của ứng dụng như Dashboard, Privacy.
 /// </summary>
+[Authorize]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;

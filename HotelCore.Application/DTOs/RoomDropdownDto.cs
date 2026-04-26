@@ -13,6 +13,6 @@ namespace HotelCore.Application.DTOs
         /// <summary>
         /// Tên phòng kèm theo loại phòng và giá (vd: Phòng 101 - Standard - 500,000đ).
         /// </summary>
-        public string? DisplayName { get; set; }
+        public string DisplayName { get; set; }
     }
 }

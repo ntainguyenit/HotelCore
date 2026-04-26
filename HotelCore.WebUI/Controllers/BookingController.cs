@@ -9,6 +9,7 @@ namespace HotelCore.WebUI.Controllers
     /// <summary>
     /// Controller quản lý nghiệp vụ Đặt phòng.
     /// </summary>
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Quản lý,Lễ tân")]
     public class BookingController : Controller
     {
         private readonly IBookingService _bookingService;

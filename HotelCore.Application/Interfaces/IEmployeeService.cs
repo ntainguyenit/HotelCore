@@ -10,7 +10,8 @@ namespace HotelCore.Application.Interfaces
     public interface IEmployeeService
     {
         Task<IEnumerable<EmployeeDto>> GetAllEmployeesAsync();
-        Task<EmployeeUpdateDto?> GetEmployeeByIdAsync(int id);
+        Task<PagedResultDto<EmployeeDto>> GetPagedEmployeesAsync(string searchTerm, int pageNumber, int pageSize);
+        Task<EmployeeUpdateDto> GetEmployeeByIdAsync(int id);
         Task<IEnumerable<RoleDropdownDto>> GetRolesAsync();
         Task<bool> CreateEmployeeAsync(EmployeeCreateDto employee);
         Task<bool> UpdateEmployeeAsync(EmployeeUpdateDto employee);

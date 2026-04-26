@@ -1,10 +1,12 @@
 using System.Threading.Tasks;
 using HotelCore.Application.DTOs;
 using HotelCore.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelCore.WebUI.Controllers
 {
+    [Authorize(Roles = "Quản lý,Lễ tân,Kinh doanh")]
     public class ServiceController : Controller
     {
         private readonly IServiceService _serviceService;
@@ -14,11 +16,12 @@ namespace HotelCore.WebUI.Controllers
             _serviceService = serviceService;
         }
 
-        public async Task<IActionResult> Index(string searchTerm)
+        public async Task<IActionResult> Index(string searchTerm, int pageNumber = 1)
         {
-            var services = await _serviceService.GetAllServicesAsync(searchTerm);
+            int pageSize = 10;
+            var result = await _serviceService.GetPagedServicesAsync(searchTerm, pageNumber, pageSize);
             ViewBag.SearchTerm = searchTerm;
-            return View(services);
+            return View(result);
         }
 
         public IActionResult Create()
