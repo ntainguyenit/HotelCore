@@ -1,0 +1,242 @@
+@model HotelCore.Application.DTOs.AnalyticsOverviewDto
+@{
+    ViewData["Title"] = "Thống kê doanh thu";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">@ViewBag.Title</h3>
+        <p class="text-muted small mb-0">Theo dõi hiệu suất kinh doanh của khách sạn</p>
+    </div>
+    
+    <div class="dropdown">
+        <button class="btn btn-white border dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown">
+            <i class="bi bi-filter me-1"></i> Bộ lọc báo cáo
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+            <li><a class="dropdown-item @(ViewBag.ActiveType == "7days" ? "active" : "")" asp-action="Index" asp-route-type="7days">7 ngày gần nhất</a></li>
+            <li><a class="dropdown-item @(ViewBag.ActiveType == "month" ? "active" : "")" asp-action="Index" asp-route-type="month">Tháng này</a></li>
+            <li><a class="dropdown-item @(ViewBag.ActiveType == "year" ? "active" : "")" asp-action="Index" asp-route-type="year">Năm nay</a></li>
+        </ul>
+        <button class="btn btn-orange ms-2 shadow-sm"><i class="bi bi-download me-1"></i> Xuất báo cáo</button>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon bg-orange-subtle text-orange rounded-3 p-3 me-3">
+                    <i class="bi bi-currency-dollar fs-4"></i>
+                </div>
+                <div>
+                    <p class="text-muted small mb-0">Tổng doanh thu</p>
+                    <h4 class="fw-bold mb-0">@Model.TotalRevenue.ToString("N0") đ</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon bg-blue-subtle text-primary rounded-3 p-3 me-3">
+                    <i class="bi bi-calendar-check fs-4"></i>
+                </div>
+                <div>
+                    <p class="text-muted small mb-0">Số đặt phòng</p>
+                    <h4 class="fw-bold mb-0">@Model.TotalBookings</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon bg-success-subtle text-success rounded-3 p-3 me-3">
+                    <i class="bi bi-people fs-4"></i>
+                </div>
+                <div>
+                    <p class="text-muted small mb-0">Khách hàng mới</p>
+                    <h4 class="fw-bold mb-0">@Model.TotalCustomers</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+            <div class="d-flex align-items-center">
+                <div class="stats-icon bg-warning-subtle text-warning rounded-3 p-3 me-3">
+                    <i class="bi bi-door-open fs-4"></i>
+                </div>
+                <div>
+                    <p class="text-muted small mb-0">Tỷ lệ lấp đầy</p>
+                    <h4 class="fw-bold mb-0">@Model.OccupancyRate%</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Revenue Chart -->
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+            <h5 class="fw-bold mb-4">Biểu đồ doanh thu</h5>
+            <canvas id="revenueChart" style="max-height: 350px;"></canvas>
+        </div>
+    </div>
+    
+    <!-- Room Status Chart -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+            <h5 class="fw-bold mb-4">Trạng thái phòng</h5>
+            <canvas id="statusChart" style="max-height: 350px;"></canvas>
+            <div class="mt-4">
+                @foreach (var stat in Model.RoomStatusStats)
+                {
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small text-muted">@stat.Status</span>
+                        <span class="fw-bold">@stat.Count</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Services -->
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold mb-4">Dịch vụ được sử dụng nhiều nhất</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Tên dịch vụ</th>
+                            <th class="text-center">Số lượt sử dụng</th>
+                            <th class="text-end pe-4">Tổng doanh thu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model.TopServices)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold">@s.ServiceName</td>
+                                <td class="text-center"><span class="badge bg-light text-dark border">@s.UsageCount lượt</span></td>
+                                <td class="text-end pe-4 fw-bold text-orange">@s.TotalRevenue.ToString("N0") đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-orange-subtle { background-color: rgba(230, 126, 34, 0.1); }
+    .bg-blue-subtle { background-color: rgba(13, 110, 253, 0.1); }
+    .bg-success-subtle { background-color: rgba(25, 135, 84, 0.1); }
+    .bg-warning-subtle { background-color: rgba(255, 193, 7, 0.1); }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Data for Revenue Chart
+        const revenueLabels = @Html.Raw(Json.Serialize(Model.RevenueByDay.Select(x => x.DateLabel)));
+        const revenueData = @Html.Raw(Json.Serialize(Model.RevenueByDay.Select(x => x.Revenue)));
+        const bookingData = @Html.Raw(Json.Serialize(Model.RevenueByDay.Select(x => x.BookingCount)));
+
+        const ctxRev = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctxRev, {
+            type: 'line',
+            data: {
+                labels: revenueLabels,
+                datasets: [{
+                    label: 'Doanh thu (VND)',
+                    data: revenueData,
+                    borderColor: '#e67e22',
+                    backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#e67e22',
+                    pointBorderColor: '#fff',
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        padding: 12,
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [5, 5] },
+                        ticks: {
+                            callback: function(value) {
+                                if (value >= 1000000) return (value / 1000000) + 'M';
+                                if (value >= 1000) return (value / 1000) + 'k';
+                                return value;
+                            }
+                        }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Data for Status Chart
+        const statusLabels = @Html.Raw(Json.Serialize(Model.RoomStatusStats.Select(x => x.Status)));
+        const statusValues = @Html.Raw(Json.Serialize(Model.RoomStatusStats.Select(x => x.Count)));
+
+        const ctxStatus = document.getElementById('statusChart').getContext('2d');
+        new Chart(ctxStatus, {
+            type: 'doughnut',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    data: statusValues,
+                    backgroundColor: [
+                        '#2ecc71', // Available
+                        '#e74c3c', // Occupied
+                        '#f1c40f', // Cleaning
+                        '#95a5a6'  // Maintenance
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { usePointStyle: true, padding: 20 }
+                    }
+                }
+            }
+        });
+    </script>
+}
