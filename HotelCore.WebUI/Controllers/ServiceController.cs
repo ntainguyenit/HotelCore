@@ -33,7 +33,11 @@ namespace HotelCore.WebUI.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _serviceService.CreateServiceAsync(serviceDto);
-                if (result) return RedirectToAction(nameof(Index));
+                if (result)
+                {
+                    TempData["Success"] = "Thêm dịch vụ thành công!";
+                    return RedirectToAction(nameof(Index));
+                }
                 ModelState.AddModelError("", "Lỗi khi thêm dịch vụ.");
             }
             return View(serviceDto);
@@ -62,7 +66,11 @@ namespace HotelCore.WebUI.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _serviceService.UpdateServiceAsync(serviceDto);
-                if (result) return RedirectToAction(nameof(Index));
+                if (result)
+                {
+                    TempData["Success"] = "Cập nhật dịch vụ thành công!";
+                    return RedirectToAction(nameof(Index));
+                }
                 ModelState.AddModelError("", "Lỗi khi cập nhật dịch vụ.");
             }
             return View(serviceDto);
@@ -73,6 +81,7 @@ namespace HotelCore.WebUI.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _serviceService.DeleteServiceAsync(id);
+            TempData["Success"] = "Đã xóa dịch vụ thành công!";
             return RedirectToAction(nameof(Index));
         }
     }

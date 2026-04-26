@@ -25,7 +25,9 @@ namespace HotelCore.Infrastructure.Services
         {
             using IDbConnection db = new SqlConnection(_connectionString);
             string sql = @"
-                SELECT i.InvoiceId, c.FullName AS CustomerName, r.RoomNumber, i.InvoiceDate, i.TotalAmount, i.PaymentMethod
+                SELECT i.InvoiceId, c.FullName AS CustomerName, r.RoomNumber, i.InvoiceDate, 
+                       i.RoomTotal as RoomAmount, i.ServiceTotal as ServiceAmount, i.TaxAmount, 
+                       i.TotalAmount, i.PaymentMethod
                 FROM Invoices i
                 JOIN Bookings b ON i.BookingId = b.BookingId
                 JOIN Customers c ON b.CustomerId = c.CustomerId
@@ -33,6 +35,22 @@ namespace HotelCore.Infrastructure.Services
                 JOIN Rooms r ON br.RoomId = r.RoomId
                 ORDER BY i.InvoiceDate DESC";
             return await db.QueryAsync<InvoiceDto>(sql);
+        }
+
+        public async Task<InvoiceDto?> GetInvoiceByIdAsync(int id)
+        {
+            using IDbConnection db = new SqlConnection(_connectionString);
+            string sql = @"
+                SELECT i.InvoiceId, c.FullName AS CustomerName, r.RoomNumber, i.InvoiceDate, 
+                       i.RoomTotal as RoomAmount, i.ServiceTotal as ServiceAmount, i.TaxAmount, 
+                       i.TotalAmount, i.PaymentMethod
+                FROM Invoices i
+                JOIN Bookings b ON i.BookingId = b.BookingId
+                JOIN Customers c ON b.CustomerId = c.CustomerId
+                JOIN BookingRooms br ON b.BookingId = br.BookingId
+                JOIN Rooms r ON br.RoomId = r.RoomId
+                WHERE i.InvoiceId = @Id";
+            return await db.QueryFirstOrDefaultAsync<InvoiceDto>(sql, new { Id = id });
         }
 
         public async Task<CheckoutViewDto?> GetBookingForCheckoutAsync(int bookingId)

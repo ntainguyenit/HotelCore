@@ -35,7 +35,10 @@ namespace HotelCore.WebUI.Controllers
             if (ModelState.IsValid)
             {
                 if (await _employeeService.CreateEmployeeAsync(employee))
+                {
+                    TempData["Success"] = "Thêm nhân viên thành công!";
                     return RedirectToAction(nameof(Index));
+                }
                 ModelState.AddModelError("", "Lỗi khi lưu dữ liệu.");
             }
             await PrepareRoleDropdown();
@@ -58,7 +61,10 @@ namespace HotelCore.WebUI.Controllers
             if (ModelState.IsValid)
             {
                 if (await _employeeService.UpdateEmployeeAsync(employee))
+                {
+                    TempData["Success"] = "Cập nhật nhân viên thành công!";
                     return RedirectToAction(nameof(Index));
+                }
                 ModelState.AddModelError("", "Lỗi khi cập nhật dữ liệu.");
             }
             await PrepareRoleDropdown();
@@ -70,6 +76,7 @@ namespace HotelCore.WebUI.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _employeeService.DeleteEmployeeAsync(id);
+            TempData["Success"] = "Đã xóa nhân viên thành công!";
             return RedirectToAction(nameof(Index));
         }
 

@@ -20,6 +20,13 @@ namespace HotelCore.WebUI.Controllers
             return View(invoices);
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            var invoice = await _invoiceService.GetInvoiceByIdAsync(id);
+            if (invoice == null) return NotFound();
+            return View(invoice);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Checkout(int bookingId)
         {

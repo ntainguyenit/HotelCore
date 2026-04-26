@@ -1,0 +1,96 @@
+@model HotelCore.Application.DTOs.InvoiceDto
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Hóa đơn #HĐ-@Model.InvoiceId - HotelCore</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; }
+        .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, .15); }
+        .invoice-header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        .brand-color { color: #e67e22; }
+        @@media print {
+            .no-print { display: none; }
+            body { padding: 0; }
+            .invoice-box { border: none; box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print text-center mb-4">
+        <button onclick="window.print()" class="btn btn-primary px-4"><i class="bi bi-printer"></i> IN HÓA ĐƠN</button>
+        <button onclick="window.close()" class="btn btn-secondary px-4">ĐÓNG</button>
+    </div>
+
+    <div class="invoice-box">
+        <div class="invoice-header">
+            <div>
+                <h2 class="fw-bold brand-color">HotelCore</h2>
+                <p class="text-muted small">Hệ thống quản lý khách sạn thông minh</p>
+            </div>
+            <div class="text-end">
+                <h4 class="fw-bold">HÓA ĐƠN THANH TOÁN</h4>
+                <p class="mb-0">Mã HĐ: #HĐ-@Model.InvoiceId</p>
+                <p>Ngày: @Model.InvoiceDate.ToString("dd/MM/yyyy HH:mm")</p>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-6">
+                <p class="text-muted mb-1 text-uppercase small fw-bold">Khách hàng</p>
+                <h5 class="fw-bold">@Model.CustomerName</h5>
+                <p class="mb-0">Phòng: <strong>@Model.RoomNumber</strong></p>
+            </div>
+            <div class="col-6 text-end">
+                <p class="text-muted mb-1 text-uppercase small fw-bold">Thông tin thanh toán</p>
+                <p class="mb-0">Phương thức: @Model.PaymentMethod</p>
+                <p>Trạng thái: <strong>Đã thanh toán</strong></p>
+            </div>
+        </div>
+
+        <table class="table table-bordered mb-4">
+            <thead class="bg-light">
+                <tr>
+                    <th>Nội dung</th>
+                    <th class="text-end">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tiền phòng</td>
+                    <td class="text-end">@Model.RoomAmount.ToString("N0") đ</td>
+                </tr>
+                <tr>
+                    <td>Tiền dịch vụ</td>
+                    <td class="text-end">@Model.ServiceAmount.ToString("N0") đ</td>
+                </tr>
+                <tr>
+                    <td>Thuế VAT (10%)</td>
+                    <td class="text-end">@Model.TaxAmount.ToString("N0") đ</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr class="fs-5">
+                    <th class="text-end">TỔNG CỘNG:</th>
+                    <th class="text-end brand-color">@Model.TotalAmount.ToString("N0") đ</th>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="mt-5 text-center">
+            <p class="mb-1">Cảm ơn quý khách đã sử dụng dịch vụ của HotelCore!</p>
+            <p class="text-muted small">Hẹn gặp lại quý khách.</p>
+        </div>
+    </div>
+
+    <script>
+        // Tự động mở hộp thoại in sau khi load trang (tùy chọn)
+        // window.onload = function() { window.print(); }
+    </script>
+</body>
+</html>

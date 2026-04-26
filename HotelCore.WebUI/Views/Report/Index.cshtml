@@ -18,7 +18,7 @@
             <li><a class="dropdown-item @(ViewBag.ActiveType == "month" ? "active" : "")" asp-action="Index" asp-route-type="month">Tháng này</a></li>
             <li><a class="dropdown-item @(ViewBag.ActiveType == "year" ? "active" : "")" asp-action="Index" asp-route-type="year">Năm nay</a></li>
         </ul>
-        <button class="btn btn-orange ms-2 shadow-sm"><i class="bi bi-download me-1"></i> Xuất báo cáo</button>
+        <button class="btn btn-orange ms-2 shadow-sm" onclick="exportReport()"><i class="bi bi-download me-1"></i> Xuất báo cáo</button>
     </div>
 </div>
 
@@ -238,5 +238,24 @@
                 }
             }
         });
+
+        // Hàm xuất báo cáo CSV đơn giản
+        function exportReport() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Ngay,Doanh thu (VND)\r\n";
+            
+            revenueLabels.forEach((label, index) => {
+                csvContent += label + "," + revenueData[index] + "\r\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Bao_cao_doanh_thu_" + new Date().toLocaleDateString() + ".csv");
+            document.body.appendChild(link);
+            link.click();
+            
+            toastr.success("Báo cáo đã được tải xuống!");
+        }
     </script>
 }

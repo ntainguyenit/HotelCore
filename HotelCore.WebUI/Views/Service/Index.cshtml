@@ -58,8 +58,8 @@
                             </td>
                             <td class="text-end pe-4">
                                 <a asp-action="Edit" asp-route-id="@item.ServiceId" class="btn btn-sm btn-outline-primary me-2"><i class="bi bi-pencil"></i></a>
-                                <form asp-action="Delete" asp-route-id="@item.ServiceId" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa dịch vụ này?')">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                <form id="deleteForm-@item.ServiceId" asp-action="Delete" asp-route-id="@item.ServiceId" method="post" class="d-inline">
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete('Xóa dịch vụ?', 'Bạn có chắc muốn xóa dịch vụ @item.ServiceName?', 'Đồng ý xóa', 'deleteForm-@item.ServiceId')"><i class="bi bi-trash"></i></button>
                                 </form>
                             </td>
                         </tr>

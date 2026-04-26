@@ -12,6 +12,9 @@ namespace HotelCore.Application.DTOs
         public string? CustomerName { get; set; }
         public string? RoomNumber { get; set; }
         public DateTime InvoiceDate { get; set; }
+        public decimal RoomAmount { get; set; }
+        public decimal ServiceAmount { get; set; }
+        public decimal TaxAmount { get; set; }
         public decimal TotalAmount { get; set; }
         public string? PaymentMethod { get; set; }
     }
