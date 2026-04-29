@@ -1,10 +1,5 @@
 # HotelCore - Enterprise Hotel Management System
 
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
-![.NET Version](https://img.shields.io/badge/.NET-8.0-blueviolet)
-![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-orange)
-![ORM](https://img.shields.io/badge/ORM-Dapper-lightgrey)
-
 **HotelCore** is a comprehensive, full-stack Hotel Management System built with modern web technologies and software engineering best practices. The project is designed with **Clean Architecture (Onion Architecture)** to ensure high maintainability, testability, and separation of concerns.
 
 ## Key Features
@@ -53,5 +48,5 @@ The relational database is fully normalized and includes the following key table
    - Ensure `HotelCore.WebUI` is set as the **Startup Project**.
    - Press `F5` to run via HTTPS or IIS Express.
 
-## 👨‍💻 Author
+## Author
 **Tai Nguyen - Nguyen Ngoc Thanh Tai**
