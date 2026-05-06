@@ -130,9 +130,9 @@
                 };
 
                 <div class="col-md-2 col-sm-4 col-6 room-item" data-floor="@floorGroup.Key">
-                    @if (room.Status == "Occupied")
+                    @if (room.Status == "Occupied" && room.BookingId.HasValue)
                     {
-                        <a href="/Invoice/Checkout?bookingId=1" class="text-decoration-none text-dark">
+                        <a href="/Invoice/Checkout?bookingId=@room.BookingId" class="text-decoration-none text-dark">
                             <div class="card room-card @borderClass h-100 p-3 text-center shadow-sm">
                                 <h5 class="fw-bold mb-1 @(room.TypeName != null && (room.TypeName.Contains("VIP") || room.TypeName.Contains("Suite")) ? "text-orange" : "")">
                                     @room.RoomNumber

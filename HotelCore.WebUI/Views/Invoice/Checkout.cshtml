@@ -5,6 +5,16 @@
 
 <div class="row justify-content-center">
     <div class="col-md-9">
+        @if (Model.Status == "CheckedOut")
+        {
+            <div class="alert alert-info shadow-sm border-0 mb-4 d-flex align-items-center">
+                <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                <div>
+                    <h6 class="mb-0 fw-bold">Thông tin: Đặt phòng này đã được thanh toán và trả phòng.</h6>
+                    <small>Bạn có thể xem lại thông tin hoặc in hóa đơn trong mục <a href="/Invoice/Index" class="fw-bold text-decoration-none">Lịch sử hóa đơn</a>.</small>
+                </div>
+            </div>
+        }
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-header bg-dark-orange text-white py-3">
                 <h5 class="mb-0 fw-bold"><i class="bi bi-receipt me-2"></i>Chi Tiết Thanh Toán - P.@Model.RoomNumber</h5>
@@ -68,11 +78,11 @@
                 </div>
 
                 <form asp-action="Create" method="post">
-                    <input type="hidden" name="BookingId" value="@Model.BookingId" />
-                    <input type="hidden" name="RoomTotal" value="@Model.RoomTotal" />
-                    <input type="hidden" name="ServiceTotal" value="@Model.ServiceTotal" />
-                    <input type="hidden" name="TaxAmount" value="@Model.TaxAmount" />
-                    <input type="hidden" name="TotalAmount" value="@Model.TotalAmount" />
+                    <input type="hidden" asp-for="BookingId" />
+                    <input type="hidden" asp-for="RoomTotal" />
+                    <input type="hidden" asp-for="ServiceTotal" />
+                    <input type="hidden" asp-for="TaxAmount" />
+                    <input type="hidden" asp-for="TotalAmount" />
 
                     <div class="d-flex flex-wrap justify-content-between align-items-center bg-light p-3 rounded-3">
                         <div class="mb-3 mb-md-0">
@@ -94,9 +104,12 @@
                         </div>
                         <div class="ms-auto d-flex gap-2">
                             <a asp-controller="Home" asp-action="Index" class="btn btn-light border px-4 py-2 fw-bold">Quay Lại</a>
-                            <button type="submit" class="btn btn-orange px-4 py-2 fw-bold shadow-sm">
-                                <i class="bi bi-check2-square me-2"></i> XÁC NHẬN THANH TOÁN
-                            </button>
+                            @if (Model.Status != "CheckedOut")
+                            {
+                                <button type="submit" class="btn btn-orange px-4 py-2 fw-bold shadow-sm">
+                                    <i class="bi bi-check2-square me-2"></i> XÁC NHẬN THANH TOÁN
+                                </button>
+                            }
                         </div>
                     </div>
                 </form>

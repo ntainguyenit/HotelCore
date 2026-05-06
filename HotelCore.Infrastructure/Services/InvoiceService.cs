@@ -104,7 +104,7 @@ namespace HotelCore.Infrastructure.Services
             
             // 1. Lấy thông tin cơ bản của đặt phòng
             string bookingSql = @"
-                SELECT b.BookingId, c.FullName AS CustomerName, r.RoomNumber, rt.TypeName AS RoomType, 
+                SELECT b.BookingId, b.Status, c.FullName AS CustomerName, r.RoomNumber, rt.TypeName AS RoomType, 
                        b.CheckInDate, b.CheckOutDate, br.Price AS RoomPricePerDay
                 FROM Bookings b
                 JOIN Customers c ON b.CustomerId = c.CustomerId
@@ -146,6 +146,15 @@ namespace HotelCore.Infrastructure.Services
             using var transaction = db.BeginTransaction();
             try
             {
+                // Kiểm tra trạng thái đặt phòng trước khi thanh toán
+                string checkStatusSql = "SELECT Status FROM Bookings WHERE BookingId = @BookingId";
+                string currentStatus = await db.QueryFirstOrDefaultAsync<string>(checkStatusSql, new { invoice.BookingId }, transaction);
+                
+                if (currentStatus == "CheckedOut")
+                {
+                    return false; // Đã thanh toán rồi
+                }
+
                 // 1. Tạo hóa đơn
                 string invoiceSql = @"
                     INSERT INTO Invoices (BookingId, EmployeeId, InvoiceDate, RoomTotal, ServiceTotal, TaxAmount, TotalAmount, PaymentMethod)

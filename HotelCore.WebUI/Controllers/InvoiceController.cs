@@ -48,9 +48,14 @@ namespace HotelCore.WebUI.Controllers
                 var result = await _invoiceService.CreateInvoiceAsync(invoice);
                 if (result)
                 {
+                    TempData["Success"] = "Thanh toán thành công!";
                     return RedirectToAction(nameof(Index));
                 }
-                ModelState.AddModelError("", "Lỗi khi xử lý thanh toán.");
+                TempData["Error"] = "Lỗi khi xử lý thanh toán. Vui lòng kiểm tra lại.";
+            }
+            else
+            {
+                TempData["Error"] = "Dữ liệu thanh toán không hợp lệ.";
             }
             return RedirectToAction(nameof(Checkout), new { bookingId = invoice.BookingId });
         }

@@ -35,5 +35,10 @@ namespace HotelCore.Application.DTOs
         /// Tên của khách hàng đang thuê phòng (nếu có). Null nếu phòng trống.
         /// </summary>
         public string CurrentCustomerName { get; set; }
+
+        /// <summary>
+        /// ID đặt phòng hiện tại (nếu có). Dùng để liên kết tới trang Thanh toán.
+        /// </summary>
+        public int? BookingId { get; set; }
     }
 }

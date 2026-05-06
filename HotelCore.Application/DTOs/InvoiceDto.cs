@@ -25,6 +25,7 @@ namespace HotelCore.Application.DTOs
     public class CheckoutViewDto
     {
         public int BookingId { get; set; }
+        public string Status { get; set; }
         public string CustomerName { get; set; }
         public string RoomNumber { get; set; }
         public string RoomType { get; set; }

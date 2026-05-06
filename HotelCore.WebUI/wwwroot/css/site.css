@@ -181,6 +181,7 @@ main {
 .badge-soft-success { background-color: #d1f2eb; color: #117a65; }
 .badge-soft-danger { background-color: #fadbd8; color: #b03a2e; }
 .badge-soft-warning { background-color: #fcf3cf; color: #b7950b; }
+.badge-soft-primary { background-color: #d6eaf8; color: #2e86c1; }
 
 /* Toastr Custom Styles */
 #toast-container > div {

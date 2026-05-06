@@ -66,11 +66,16 @@ namespace HotelCore.Infrastructure.Services
                     rt.TypeName,
                     rt.Capacity,
                     r.Status,
+                    b.BookingId,
                     c.FullName AS CurrentCustomerName
                 FROM Rooms r
                 INNER JOIN RoomTypes rt ON r.RoomTypeId = rt.RoomTypeId
-                LEFT JOIN BookingRooms br ON r.RoomId = br.RoomId
-                LEFT JOIN Bookings b ON br.BookingId = b.BookingId AND b.Status = 'CheckedIn'
+                LEFT JOIN (
+                    SELECT br.RoomId, b.BookingId, b.CustomerId
+                    FROM BookingRooms br
+                    INNER JOIN Bookings b ON br.BookingId = b.BookingId
+                    WHERE b.Status = 'CheckedIn'
+                ) b ON r.RoomId = b.RoomId
                 LEFT JOIN Customers c ON b.CustomerId = c.CustomerId
                 ORDER BY r.Floor, r.RoomNumber;
             ";
