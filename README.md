@@ -50,9 +50,6 @@ Cơ sở dữ liệu quan hệ được chuẩn hóa hoàn toàn và bao gồm c
    - Đảm bảo `HotelCore.WebUI` được thiết lập làm **Startup Project** (Dự án khởi động).
    - Nhấn `F5` để chạy ứng dụng thông qua HTTPS hoặc IIS Express.
 
-## Tác Giả
-**Tai Nguyen - Nguyễn Ngọc Thanh Tài**
-
 ---
 
 # HotelCore - Enterprise Hotel Management System
@@ -104,6 +101,3 @@ The relational database is fully normalized and includes the following key table
    - Open the solution `HotelCore.sln` in **Visual Studio 2022**.
    - Ensure `HotelCore.WebUI` is set as the **Startup Project**.
    - Press `F5` to run via HTTPS or IIS Express.
-
-## Author
-**Tai Nguyen - Nguyen Ngoc Thanh Tai**
