@@ -120,8 +120,4 @@ The relational database is fully normalized and includes the following key table
 5. **Run the Application:**
    - Open the solution `HotelCore.sln` in **Visual Studio 2022**.
    - Ensure `HotelCore.WebUI` is set as the **Startup Project**.
-<<<<<<< HEAD
    - Press `F5` to run via HTTPS or IIS Express.
-=======
-   - Press `F5` to run via HTTPS or IIS Express.
->>>>>>> f95a2aa9e4bc62fdc670c7af2f37224c940cc46c
