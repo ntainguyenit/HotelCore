@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelCore.Infrastructure", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelCore.WebUI", "HotelCore.WebUI\HotelCore.WebUI.csproj", "{4289EF8B-FDC8-4D8F-BE59-D51B1D1545A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelCore.Tests", "HotelCore.Tests\HotelCore.Tests.csproj", "{F83165D0-2ED7-4CA6-984F-7E1CD802D574}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,5 +74,17 @@ Global
 		{4289EF8B-FDC8-4D8F-BE59-D51B1D1545A7}.Release|x64.Build.0 = Release|Any CPU
 		{4289EF8B-FDC8-4D8F-BE59-D51B1D1545A7}.Release|x86.ActiveCfg = Release|Any CPU
 		{4289EF8B-FDC8-4D8F-BE59-D51B1D1545A7}.Release|x86.Build.0 = Release|Any CPU
+		{F83165D0-2ED7-4CA6-984F-7E1CD802D574}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F83165D0-2ED7-4CA6-984F-7E1CD802D574}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F83165D0-2ED7-4CA6-984F-7E1CD802D574}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F83165D0-2ED7-4CA6-984F-7E1CD802D574}.Debug|x64.Build.0 = Debug|Any CPU
+		{F83165D0-2ED7-4CA6-984F-7E1CD802D574}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F83165D0-2ED7-4CA6-984F-7E1CD802D574}.Debug|x86.Build.0 = Debug|Any CPU
+		{F83165D0-2ED7-4CA6-984F-7E1CD802D574}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F83165D0-2ED7-4CA6-984F-7E1CD802D574}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F83165D0-2ED7-4CA6-984F-7E1CD802D574}.Release|x64.ActiveCfg = Release|Any CPU
+		{F83165D0-2ED7-4CA6-984F-7E1CD802D574}.Release|x64.Build.0 = Release|Any CPU
+		{F83165D0-2ED7-4CA6-984F-7E1CD802D574}.Release|x86.ActiveCfg = Release|Any CPU
+		{F83165D0-2ED7-4CA6-984F-7E1CD802D574}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

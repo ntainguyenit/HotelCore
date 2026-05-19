@@ -14,6 +14,12 @@ builder.Services.AddScoped<HotelCore.Application.Interfaces.IAuthService, HotelC
 builder.Services.AddScoped<HotelCore.Application.Interfaces.ISettingService, HotelCore.Infrastructure.Services.SettingService>();
 builder.Services.AddScoped<HotelCore.Application.Interfaces.IReportService, HotelCore.Infrastructure.Services.ReportService>();
 
+// Đăng ký các dịch vụ bổ sung phục vụ mở rộng tính năng và nâng cao nghiệp vụ
+builder.Services.AddScoped<HotelCore.Application.Interfaces.IPromotionEngine, HotelCore.Application.Services.PromotionEngine>();
+builder.Services.AddScoped<HotelCore.Application.Interfaces.ILoyaltyService, HotelCore.Application.Services.LoyaltyService>();
+builder.Services.AddScoped<HotelCore.Application.Interfaces.IRevenueManager, HotelCore.Application.Services.RevenueManager>();
+builder.Services.AddScoped<HotelCore.Application.Interfaces.IBookingValidationService, HotelCore.Application.Services.BookingValidationService>();
+
 // Cấu hình Authentication
 builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
